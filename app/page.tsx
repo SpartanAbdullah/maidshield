@@ -25,6 +25,9 @@ export default function Home() {
                 <Link href="/about" className={buttonClassName("secondary")}>
                   Learn more
                 </Link>
+                <Link href="/pro" className={buttonClassName("ghost")}>
+                  Join Pro waitlist
+                </Link>
               </>
             }
           />

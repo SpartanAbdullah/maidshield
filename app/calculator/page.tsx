@@ -207,7 +207,7 @@ export default function Calculator() {
   }
 
   function handleJoinWaitlistClick() {
-    window.location.assign("/#updates-heading");
+    window.location.assign("/pro");
   }
 
   function handleSaveScenario() {

@@ -31,7 +31,7 @@ function validateEmail(email: string) {
 }
 
 export function LeadCapture({
-  source = "marketing-landing",
+  source = "www",
   className,
 }: LeadCaptureProps) {
   const [email, setEmail] = useState("");
@@ -91,7 +91,7 @@ export function LeadCapture({
         | null;
 
       if (response.ok && data?.ok) {
-        track("lead_submit_success");
+        track("lead_submit_success", { source });
         setState("success");
         setMessage("Thanks \u2014 we\u2019ll email you when new features ship.");
         setEmail("");
