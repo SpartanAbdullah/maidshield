@@ -10,14 +10,14 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
 import { Input } from "@/components/ui/Input";
 import { track } from "@/lib/analytics";
+import {
+  deleteScenario,
+  loadScenarios,
+  saveScenario,
+} from "@/lib/storage/scenarios";
+import type { Scenario, ScenarioData } from "@/types/scenario";
 
-type FormState = {
-  startDate: string;
-  endDate: string;
-  basicMonthlySalary: string;
-  unpaidLeaveDays: string;
-  notes: string;
-};
+type FormState = ScenarioData;
 
 type FormErrors = {
   startDate?: string;
@@ -87,6 +87,27 @@ function consumeFreePrintAllowance(limit: number) {
   }
 }
 
+function createScenarioId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `scenario-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+}
+
+function formatScenarioDate(value: string) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+}
+
 function buildPrintUrl(form: FormState): string {
   const params = new URLSearchParams();
 
@@ -102,9 +123,12 @@ function buildPrintUrl(form: FormState): string {
 export default function Calculator() {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [printLimitMessage, setPrintLimitMessage] = useState("");
+  const [scenarioTitle, setScenarioTitle] = useState("");
+  const [savedScenarios, setSavedScenarios] = useState<Scenario[]>([]);
 
   useEffect(() => {
     track("calculator_view");
+    setSavedScenarios(loadScenarios());
   }, []);
 
   const errors = useMemo<FormErrors>(() => {
@@ -186,6 +210,38 @@ export default function Calculator() {
     window.location.assign("/#updates-heading");
   }
 
+  function handleSaveScenario() {
+    if (hasBlockingErrors) return;
+
+    const trimmedTitle = scenarioTitle.trim();
+    const title = trimmedTitle || `Scenario - ${getTodayKey()}`;
+
+    const scenario: Scenario = {
+      id: createScenarioId(),
+      title,
+      createdAt: new Date().toISOString(),
+      data: { ...form },
+    };
+
+    saveScenario(scenario);
+    setSavedScenarios(loadScenarios());
+    setScenarioTitle("");
+    track("scenario_saved");
+  }
+
+  function handleLoadScenario(scenario: Scenario) {
+    setForm({ ...scenario.data });
+    setScenarioTitle(scenario.title);
+    setPrintLimitMessage("");
+    track("scenario_loaded");
+  }
+
+  function handleDeleteScenario(id: string) {
+    deleteScenario(id);
+    setSavedScenarios(loadScenarios());
+    track("scenario_deleted");
+  }
+
   return (
     <main className="py-12 sm:py-16">
       <Container>
@@ -258,114 +314,181 @@ export default function Calculator() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent>
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-base font-semibold text-slate-900">Live Summary</h2>
+          <div className="space-y-6">
+            <Card>
+              <CardContent>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h2 className="text-base font-semibold text-slate-900">Live Summary</h2>
 
-                <Button
-                  variant="secondary"
-                  disabled={hasBlockingErrors}
-                  onClick={handlePrintClick}
-                  title={
-                    hasBlockingErrors
-                      ? "Complete required fields to enable print summary"
-                      : "Opens print-friendly summary in a new tab"
-                  }
-                >
-                  Download/Print PDF
-                </Button>
-              </div>
-
-              <Divider className="my-5" />
-
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                    Service Duration
-                  </p>
-                  <p className="mt-1 text-sm text-slate-800">
-                    {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
-                    {estimate.serviceDuration.days}d
-                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="secondary"
+                      disabled={hasBlockingErrors}
+                      onClick={handlePrintClick}
+                      title={
+                        hasBlockingErrors
+                          ? "Complete required fields to enable print summary"
+                          : "Opens print-friendly summary in a new tab"
+                      }
+                    >
+                      Download/Print PDF
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      disabled={hasBlockingErrors}
+                      onClick={handleSaveScenario}
+                      title={
+                        hasBlockingErrors
+                          ? "Complete required fields to save a scenario"
+                          : "Save this input set for later"
+                      }
+                    >
+                      Save scenario
+                    </Button>
+                  </div>
                 </div>
 
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                    Estimated Gratuity
-                  </p>
-                  <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-                    AED {estimate.gratuityAmount.toFixed(2)}
-                  </p>
+                <Divider className="my-5" />
+
+                <Input
+                  label="Scenario title (optional)"
+                  placeholder="Example: March review"
+                  value={scenarioTitle}
+                  onChange={(event) => setScenarioTitle(event.target.value)}
+                  hint={`If left empty, it will be saved as "Scenario - ${getTodayKey()}".`}
+                />
+
+                <div className="mt-5 space-y-4">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                      Service Duration
+                    </p>
+                    <p className="mt-1 text-sm text-slate-800">
+                      {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
+                      {estimate.serviceDuration.days}d
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                      Estimated Gratuity
+                    </p>
+                    <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+                      AED {estimate.gratuityAmount.toFixed(2)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                      Warnings
+                    </p>
+                    {estimate.warnings.length === 0 ? (
+                      <p className="mt-1 text-sm text-slate-600">No warnings.</p>
+                    ) : (
+                      <ul className="mt-2 space-y-2 text-sm text-amber-700">
+                        {estimate.warnings.map((warning) => (
+                          <li key={warning} className="rounded-md bg-amber-50 px-3 py-2">
+                            {warning}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                    Warnings
-                  </p>
-                  {estimate.warnings.length === 0 ? (
-                    <p className="mt-1 text-sm text-slate-600">No warnings.</p>
-                  ) : (
-                    <ul className="mt-2 space-y-2 text-sm text-amber-700">
-                      {estimate.warnings.map((warning) => (
-                        <li key={warning} className="rounded-md bg-amber-50 px-3 py-2">
-                          {warning}
+                <details className="mt-6 rounded-lg border border-slate-200 bg-slate-50">
+                  <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">
+                    Assumptions &amp; Notes
+                  </summary>
+                  <div className="space-y-3 px-4 pb-4 text-sm text-slate-600">
+                    <ul className="space-y-2">
+                      {estimate.assumptionsUsed.map((assumption) => (
+                        <li key={assumption} className="leading-6">
+                          {assumption}
                         </li>
                       ))}
                     </ul>
-                  )}
-                </div>
-              </div>
 
-              <details className="mt-6 rounded-lg border border-slate-200 bg-slate-50">
-                <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">
-                  Assumptions &amp; Notes
-                </summary>
-                <div className="space-y-3 px-4 pb-4 text-sm text-slate-600">
-                  <ul className="space-y-2">
-                    {estimate.assumptionsUsed.map((assumption) => (
-                      <li key={assumption} className="leading-6">
-                        {assumption}
+                    {form.notes.trim() ? (
+                      <>
+                        <Divider />
+                        <p className="text-slate-700">
+                          <span className="font-medium">User note:</span> {form.notes}
+                        </p>
+                      </>
+                    ) : null}
+                  </div>
+                </details>
+
+                <p className="mt-3 text-xs text-slate-500">
+                  PDF export uses your browser print dialog and does not store files on the server.
+                </p>
+
+                <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <h3 className="text-sm font-semibold text-slate-900">MaidShield Pro</h3>
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                    <li>Unlimited prints</li>
+                    <li>Save scenarios</li>
+                    <li>Employer checklist (coming soon)</li>
+                  </ul>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="mt-4"
+                    onClick={handleJoinWaitlistClick}
+                  >
+                    Join waitlist for Pro
+                  </Button>
+                  {printLimitMessage ? (
+                    <p className="mt-3 text-sm text-slate-700">{printLimitMessage}</p>
+                  ) : null}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="space-y-4">
+                <h3 className="text-base font-semibold text-slate-900">Saved scenarios</h3>
+                {savedScenarios.length === 0 ? (
+                  <p className="text-sm text-slate-600">
+                    No saved scenarios yet. Save one from the summary panel.
+                  </p>
+                ) : (
+                  <ul className="space-y-3">
+                    {savedScenarios.map((scenario) => (
+                      <li
+                        key={scenario.id}
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+                      >
+                        <div>
+                          <p className="text-sm font-medium text-slate-900">{scenario.title}</p>
+                          <p className="text-xs text-slate-500">
+                            Saved {formatScenarioDate(scenario.createdAt)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleLoadScenario(scenario)}
+                          >
+                            Load
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteScenario(scenario.id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
                       </li>
                     ))}
                   </ul>
-
-                  {form.notes.trim() ? (
-                    <>
-                      <Divider />
-                      <p className="text-slate-700">
-                        <span className="font-medium">User note:</span> {form.notes}
-                      </p>
-                    </>
-                  ) : null}
-                </div>
-              </details>
-
-              <p className="mt-3 text-xs text-slate-500">
-                PDF export uses your browser print dialog and does not store files on the server.
-              </p>
-
-              <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <h3 className="text-sm font-semibold text-slate-900">MaidShield Pro</h3>
-                <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
-                  <li>Unlimited prints</li>
-                  <li>Save scenarios</li>
-                  <li>Employer checklist (coming soon)</li>
-                </ul>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="mt-4"
-                  onClick={handleJoinWaitlistClick}
-                >
-                  Join waitlist for Pro
-                </Button>
-                {printLimitMessage ? (
-                  <p className="mt-3 text-sm text-slate-700">{printLimitMessage}</p>
-                ) : null}
-              </div>
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </section>
       </Container>
     </main>
