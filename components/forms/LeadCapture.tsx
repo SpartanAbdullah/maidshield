@@ -5,6 +5,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { track } from "@/lib/analytics";
 
 type LeadCaptureState = "idle" | "loading" | "success" | "error";
 
@@ -90,6 +91,7 @@ export function LeadCapture({
         | null;
 
       if (response.ok && data?.ok) {
+        track("lead_submit_success");
         setState("success");
         setMessage("Thanks \u2014 we\u2019ll email you when new features ship.");
         setEmail("");

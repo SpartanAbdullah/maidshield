@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import { Container } from "@/components/layout/Container";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
 import { Input } from "@/components/ui/Input";
+import { track } from "@/lib/analytics";
 
 type FormState = {
   startDate: string;
@@ -47,6 +48,10 @@ function buildPrintUrl(form: FormState): string {
 
 export default function Calculator() {
   const [form, setForm] = useState<FormState>(initialFormState);
+
+  useEffect(() => {
+    track("calculator_view");
+  }, []);
 
   const errors = useMemo<FormErrors>(() => {
     const nextErrors: FormErrors = {};
@@ -108,6 +113,7 @@ export default function Calculator() {
 
   function handlePrintClick() {
     if (hasBlockingErrors) return;
+    track("print_click");
     window.open(printHref, "_blank", "noopener,noreferrer");
   }
 

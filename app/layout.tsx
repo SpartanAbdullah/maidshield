@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { PWARegister } from "@/components/layout/PWARegister";
 import { TopNav } from "@/components/layout/TopNav";
 import "./globals.css";
@@ -36,12 +37,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN?.trim();
+  const shouldLoadPlausible =
+    process.env.NODE_ENV === "production" && Boolean(plausibleDomain);
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-slate-50 text-slate-900 antialiased`}>
         <PWARegister />
         <TopNav />
         {children}
+        {shouldLoadPlausible ? (
+          <Script
+            src="https://plausible.io/js/script.js"
+            data-domain={plausibleDomain}
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );
