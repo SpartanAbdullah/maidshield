@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { buttonClassName } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
 import { Input } from "@/components/ui/Input";
@@ -82,6 +82,7 @@ export default function Calculator() {
 
   const hasBlockingErrors =
     Boolean(errors.startDate) || Boolean(errors.endDate) || Boolean(errors.basicMonthlySalary);
+
   const printHref = buildPrintUrl(form);
 
   const estimate = useMemo(() => {
@@ -105,6 +106,11 @@ export default function Calculator() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function handlePrintClick() {
+    if (hasBlockingErrors) return;
+    window.open(printHref, "_blank", "noopener,noreferrer");
+  }
+
   return (
     <main className="py-12 sm:py-16">
       <Container>
@@ -116,9 +122,7 @@ export default function Calculator() {
         <section className="mt-8 grid gap-6 lg:grid-cols-2">
           <Card>
             <CardContent className="space-y-4">
-              <h2 className="text-base font-semibold text-slate-900">
-                Employment Inputs
-              </h2>
+              <h2 className="text-base font-semibold text-slate-900">Employment Inputs</h2>
               <p className="text-sm text-slate-600">
                 Update values to refresh the estimate instantly.
               </p>
@@ -130,6 +134,7 @@ export default function Calculator() {
                 onChange={(event) => updateField("startDate", event.target.value)}
                 error={errors.startDate}
               />
+
               <Input
                 type="date"
                 label="End Date"
@@ -137,18 +142,18 @@ export default function Calculator() {
                 onChange={(event) => updateField("endDate", event.target.value)}
                 error={errors.endDate}
               />
+
               <Input
                 type="number"
                 min="0"
                 step="0.01"
                 label="Basic Monthly Salary"
                 value={form.basicMonthlySalary}
-                onChange={(event) =>
-                  updateField("basicMonthlySalary", event.target.value)
-                }
+                onChange={(event) => updateField("basicMonthlySalary", event.target.value)}
                 error={errors.basicMonthlySalary}
                 hint="Enter base monthly wage used for gratuity estimation."
               />
+
               <Input
                 type="number"
                 min="0"
@@ -158,6 +163,7 @@ export default function Calculator() {
                 onChange={(event) => updateField("unpaidLeaveDays", event.target.value)}
                 error={errors.unpaidLeaveDays}
               />
+
               <div className="space-y-1.5">
                 <label
                   htmlFor="calculator-notes"
@@ -171,7 +177,7 @@ export default function Calculator() {
                   value={form.notes}
                   onChange={(event) => updateField("notes", event.target.value)}
                   placeholder="Add internal context for this estimate..."
-                  className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                  className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-white"
                 />
               </div>
             </CardContent>
@@ -181,19 +187,19 @@ export default function Calculator() {
             <CardContent>
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-base font-semibold text-slate-900">Live Summary</h2>
-                <a
-                  href={printHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Opens print-friendly summary in a new tab"
-                  aria-disabled={hasBlockingErrors}
-                  className={buttonClassName(
-                    "secondary",
-                    hasBlockingErrors ? "pointer-events-none opacity-50" : "",
-                  )}
+
+                <Button
+                  variant="secondary"
+                  disabled={hasBlockingErrors}
+                  onClick={handlePrintClick}
+                  title={
+                    hasBlockingErrors
+                      ? "Complete required fields to enable print summary"
+                      : "Opens print-friendly summary in a new tab"
+                  }
                 >
                   Download/Print PDF
-                </a>
+                </Button>
               </div>
 
               <Divider className="my-5" />
@@ -248,6 +254,7 @@ export default function Calculator() {
                       </li>
                     ))}
                   </ul>
+
                   {form.notes.trim() ? (
                     <>
                       <Divider />
@@ -258,6 +265,7 @@ export default function Calculator() {
                   ) : null}
                 </div>
               </details>
+
               <p className="mt-3 text-xs text-slate-500">
                 PDF export uses your browser print dialog and does not store files on the server.
               </p>

@@ -73,7 +73,7 @@ export default function Home() {
               />
               <Link
                 href="/calculator"
-                className={buttonClassName("secondary", "mt-1")}
+                className={buttonClassName("secondary", "md", "mt-1")}
               >
                 Continue to Full Form
               </Link>

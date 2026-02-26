@@ -29,8 +29,10 @@ export function Input({
 
   const inputClasses = [
     "block h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900",
-    "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300",
-    error ? "border-rose-400 focus:ring-rose-200" : "border-slate-300",
+    "placeholder:text-slate-400",
+    "focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-white",
+    "disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed",
+    error ? "border-rose-400 focus:ring-rose-200" : "border-slate-300 hover:border-slate-400",
     leading ? "pl-10" : "",
     trailing ? "pr-10" : "",
     className,
@@ -38,9 +40,7 @@ export function Input({
     .filter(Boolean)
     .join(" ");
 
-  const wrapperClasses = ["space-y-1.5", containerClassName]
-    .filter(Boolean)
-    .join(" ");
+  const wrapperClasses = ["space-y-1.5", containerClassName].filter(Boolean).join(" ");
 
   return (
     <div className={wrapperClasses}>
@@ -49,12 +49,14 @@ export function Input({
           {label}
         </label>
       ) : null}
+
       <div className="relative">
         {leading ? (
           <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
             {leading}
           </span>
         ) : null}
+
         <input
           id={inputId}
           aria-invalid={Boolean(error)}
@@ -62,17 +64,20 @@ export function Input({
           className={inputClasses}
           {...props}
         />
+
         {trailing ? (
           <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500">
             {trailing}
           </span>
         ) : null}
       </div>
+
       {hint ? (
         <p id={hintId} className="text-xs text-slate-500">
           {hint}
         </p>
       ) : null}
+
       {error ? (
         <p id={errorId} className="text-xs text-rose-600">
           {error}
@@ -81,4 +86,3 @@ export function Input({
     </div>
   );
 }
-
