@@ -1,84 +1,135 @@
-import Link from "next/link";
+"use client";
 
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { buttonClassName } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Divider } from "@/components/ui/Divider";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
 
 export default function Home() {
+  const openApp = () => {
+    window.location.assign("https://app.maidshield.com/calculator");
+  };
+
+  const openAbout = () => {
+    window.location.assign("/about");
+  };
+
   return (
-    <main className="min-h-screen py-16 sm:py-20">
-      <Container>
-        <PageHeader
-          title="MaidShield"
-          subtitle="A clear, structured workspace for domestic worker settlement and compliance estimates."
-          actions={
-            <>
-              <Link href="/calculator" className={buttonClassName()}>
-                Open Calculator
-              </Link>
-              <Link href="/health" className={buttonClassName("secondary")}>
-                System Status
-              </Link>
-            </>
-          }
-        />
+    <main className="min-h-screen bg-slate-50 py-16 sm:py-24">
+      <Container className="space-y-16 sm:space-y-20">
+        <section className="rounded-2xl border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-14">
+          <PageHeader
+            title="Calm clarity for domestic worker settlement planning"
+            subtitle="MaidShield helps teams produce consistent, transparent estimates with less back-and-forth and better operational control."
+            actions={
+              <>
+                <Button onClick={openApp}>Open App</Button>
+                <Button variant="secondary" onClick={openAbout}>
+                  Learn more
+                </Button>
+              </>
+            }
+          />
+        </section>
 
-        <section className="mt-10 grid gap-6 lg:grid-cols-2">
-          <Card>
-            <CardContent>
-              <h2 className="text-lg font-semibold text-slate-900">
-                Plan With Confidence
-              </h2>
+        <section aria-labelledby="features-heading">
+          <h2
+            id="features-heading"
+            className="text-2xl font-semibold tracking-tight text-slate-900"
+          >
+            Built for steady, repeatable operations
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+            Keep every estimate structured, auditable, and easier to explain to
+            internal teams and households.
+          </p>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            <Card>
+              <CardContent className="space-y-3">
+                <h3 className="text-base font-semibold text-slate-900">
+                  Structured Inputs
+                </h3>
+                <p className="text-sm leading-6 text-slate-600">
+                  Guided fields help teams collect required details in a uniform
+                  format every time.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="space-y-3">
+                <h3 className="text-base font-semibold text-slate-900">
+                  Transparent Breakdown
+                </h3>
+                <p className="text-sm leading-6 text-slate-600">
+                  See how each factor contributes to the estimate, so reviews are
+                  clear and accountable.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="space-y-3">
+                <h3 className="text-base font-semibold text-slate-900">
+                  Team-Ready Outputs
+                </h3>
+                <p className="text-sm leading-6 text-slate-600">
+                  Generate consistent summaries that are easier to hand over,
+                  validate, and archive.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <section
+          aria-labelledby="how-it-works-heading"
+          className="rounded-2xl border border-slate-200 bg-white px-6 py-8 sm:px-10 sm:py-10"
+        >
+          <h2
+            id="how-it-works-heading"
+            className="text-2xl font-semibold tracking-tight text-slate-900"
+          >
+            How it works
+          </h2>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Step 1
+              </p>
+              <h3 className="mt-2 text-base font-semibold text-slate-900">
+                Enter case details
+              </h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Estimate totals with transparent assumptions, jurisdiction-aware
-                factors, and a clean breakdown for internal review.
+                Add employment and jurisdiction inputs with clear field guidance.
               </p>
-              <Divider className="my-5" />
-              <ul className="space-y-3 text-sm text-slate-700">
-                <li>Structured inputs designed for fast completion.</li>
-                <li>Readable estimate ranges with line-item context.</li>
-                <li>Export-friendly summaries for record keeping.</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="space-y-4">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Preview Inputs
-              </h2>
-              <p className="text-sm text-slate-600">
-                Standardized controls keep data entry consistent across workflows.
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Step 2
               </p>
-              <Input
-                label="Household Reference"
-                placeholder="Enter internal reference"
-                hint="Used only for this session unless saved later."
-                leading={<span className="text-xs">ID</span>}
-              />
-              <Select
-                label="Jurisdiction"
-                defaultValue=""
-                placeholder="Select location"
-                options={[
-                  { label: "Dubai", value: "dubai" },
-                  { label: "Abu Dhabi", value: "abu-dhabi" },
-                  { label: "Sharjah", value: "sharjah" },
-                ]}
-                hint="Rules are applied from configured regional assumptions."
-              />
-              <Link
-                href="/calculator"
-                className={buttonClassName("secondary", "md", "mt-1")}
-              >
-                Continue to Full Form
-              </Link>
-            </CardContent>
-          </Card>
+              <h3 className="mt-2 text-base font-semibold text-slate-900">
+                Review assumptions
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Inspect line items and make sure each estimate reflects your case
+                context.
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Step 3
+              </p>
+              <h3 className="mt-2 text-base font-semibold text-slate-900">
+                Share and proceed
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Use a readable summary to align teams before formal legal review.
+              </p>
+            </div>
+          </div>
+          <p className="mt-8 text-xs leading-5 text-slate-500">
+            Estimates are for planning purposes only and do not constitute legal
+            advice.
+          </p>
         </section>
       </Container>
     </main>
