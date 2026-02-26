@@ -1,19 +1,12 @@
-"use client";
+import Link from "next/link";
 
+import { LeadCapture } from "@/components/forms/LeadCapture";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Button } from "@/components/ui/Button";
+import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 
 export default function Home() {
-  const openApp = () => {
-    window.location.assign("https://app.maidshield.com/calculator");
-  };
-
-  const openAbout = () => {
-    window.location.assign("/about");
-  };
-
   return (
     <main className="min-h-screen bg-slate-50 py-16 sm:py-24">
       <Container className="space-y-16 sm:space-y-20">
@@ -23,10 +16,15 @@ export default function Home() {
             subtitle="MaidShield helps teams produce consistent, transparent estimates with less back-and-forth and better operational control."
             actions={
               <>
-                <Button onClick={openApp}>Open App</Button>
-                <Button variant="secondary" onClick={openAbout}>
+                <Link
+                  href="https://app.maidshield.com/calculator"
+                  className={buttonClassName()}
+                >
+                  Open App
+                </Link>
+                <Link href="/about" className={buttonClassName("secondary")}>
                   Learn more
-                </Button>
+                </Link>
               </>
             }
           />
@@ -126,7 +124,23 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <p className="mt-8 text-xs leading-5 text-slate-500">
+        </section>
+
+        <section aria-labelledby="updates-heading">
+          <h2
+            id="updates-heading"
+            className="text-2xl font-semibold tracking-tight text-slate-900"
+          >
+            Get updates
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            No spam. Unsubscribe anytime.
+          </p>
+          <LeadCapture className="mt-6 max-w-2xl" />
+        </section>
+
+        <section>
+          <p className="text-xs leading-5 text-slate-500">
             Estimates are for planning purposes only and do not constitute legal
             advice.
           </p>
