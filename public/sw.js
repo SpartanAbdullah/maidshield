@@ -13,12 +13,10 @@ self.addEventListener("activate", (event) => {
     (async () => {
       const keys = await caches.keys();
       await Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key)),
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
       await self.clients.claim();
-    })(),
+    })()
   );
 });
 
@@ -30,9 +28,18 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Never cache documents or API responses with user data.
+  // Never cache documents/navigations (HTML) or API responses with user data.
   if (request.mode === "navigate" || request.destination === "document") return;
   if (url.pathname.startsWith("/api")) return;
+
+  // Extra safety: never cache routes that may involve personal inputs.
+  if (
+    url.pathname.startsWith("/calculator") ||
+    url.pathname.startsWith("/privacy") ||
+    url.pathname.startsWith("/terms")
+  ) {
+    return;
+  }
 
   const isStaticAsset =
     url.pathname.startsWith(STATIC_PATH) ||
@@ -45,15 +52,13 @@ self.addEventListener("fetch", (event) => {
     (async () => {
       const cache = await caches.open(CACHE_NAME);
       const cached = await cache.match(request);
-      if (cached) {
-        return cached;
-      }
+      if (cached) return cached;
 
       const response = await fetch(request);
       if (response.ok && response.type === "basic") {
         await cache.put(request, response.clone());
       }
       return response;
-    })(),
+    })()
   );
 });

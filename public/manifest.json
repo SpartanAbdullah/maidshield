@@ -2,29 +2,14 @@
   "name": "MaidShield",
   "short_name": "MaidShield",
   "description": "Domestic worker settlement and compliance planning workspace.",
-  "start_url": "/",
+  "start_url": "/calculator?source=pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#f8fafc",
   "icons": [
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
