@@ -26,6 +26,9 @@ type FormErrors = {
   unpaidLeaveDays?: string;
 };
 
+const FREE_DAILY_PRINT_LIMIT = 2;
+const PRINT_USAGE_STORAGE_KEY = "maidshield.print_usage.v1";
+
 const initialFormState: FormState = {
   startDate: "",
   endDate: "",
@@ -33,6 +36,56 @@ const initialFormState: FormState = {
   unpaidLeaveDays: "",
   notes: "",
 };
+
+function getTodayKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function consumeFreePrintAllowance(limit: number) {
+  if (typeof window === "undefined") {
+    return { allowed: true };
+  }
+
+  try {
+    const today = getTodayKey();
+    const storedRaw = window.localStorage.getItem(PRINT_USAGE_STORAGE_KEY);
+
+    let storedDate = today;
+    let storedCount = 0;
+
+    if (storedRaw) {
+      const parsed = JSON.parse(storedRaw) as { date?: unknown; count?: unknown };
+      if (typeof parsed?.date === "string") {
+        storedDate = parsed.date;
+      }
+      if (typeof parsed?.count === "number" && Number.isFinite(parsed.count) && parsed.count >= 0) {
+        storedCount = Math.floor(parsed.count);
+      }
+    }
+
+    const currentCount = storedDate === today ? storedCount : 0;
+
+    if (currentCount >= limit) {
+      return { allowed: false };
+    }
+
+    window.localStorage.setItem(
+      PRINT_USAGE_STORAGE_KEY,
+      JSON.stringify({
+        date: today,
+        count: currentCount + 1,
+      })
+    );
+
+    return { allowed: true };
+  } catch {
+    return { allowed: true };
+  }
+}
 
 function buildPrintUrl(form: FormState): string {
   const params = new URLSearchParams();
@@ -48,6 +101,7 @@ function buildPrintUrl(form: FormState): string {
 
 export default function Calculator() {
   const [form, setForm] = useState<FormState>(initialFormState);
+  const [printLimitMessage, setPrintLimitMessage] = useState("");
 
   useEffect(() => {
     track("calculator_view");
@@ -113,8 +167,23 @@ export default function Calculator() {
 
   function handlePrintClick() {
     if (hasBlockingErrors) return;
+
+    const allowance = consumeFreePrintAllowance(FREE_DAILY_PRINT_LIMIT);
+    if (!allowance.allowed) {
+      track("print_blocked_limit");
+      setPrintLimitMessage(
+        "You have reached your 2 free prints for today. Join the Pro waitlist for unlimited prints."
+      );
+      return;
+    }
+
+    setPrintLimitMessage("");
     track("print_click");
     window.open(printHref, "_blank", "noopener,noreferrer");
+  }
+
+  function handleJoinWaitlistClick() {
+    window.location.assign("/#updates-heading");
   }
 
   return (
@@ -275,6 +344,26 @@ export default function Calculator() {
               <p className="mt-3 text-xs text-slate-500">
                 PDF export uses your browser print dialog and does not store files on the server.
               </p>
+
+              <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <h3 className="text-sm font-semibold text-slate-900">MaidShield Pro</h3>
+                <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                  <li>Unlimited prints</li>
+                  <li>Save scenarios</li>
+                  <li>Employer checklist (coming soon)</li>
+                </ul>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="mt-4"
+                  onClick={handleJoinWaitlistClick}
+                >
+                  Join waitlist for Pro
+                </Button>
+                {printLimitMessage ? (
+                  <p className="mt-3 text-sm text-slate-700">{printLimitMessage}</p>
+                ) : null}
+              </div>
             </CardContent>
           </Card>
         </section>
