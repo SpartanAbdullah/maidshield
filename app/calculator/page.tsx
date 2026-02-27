@@ -217,7 +217,8 @@ export default function Calculator() {
       nextErrors.endDate = "End date is required.";
     }
     if (form.startDate && form.endDate && form.endDate < form.startDate) {
-      nextErrors.endDate = "End date cannot be before start date.";
+      nextErrors.endDate =
+        "Please choose valid dates; the end date must be after the start date.";
     }
 
     const salary = Number(form.basicMonthlySalary);
@@ -244,6 +245,24 @@ export default function Calculator() {
   const missingRequiredInputs =
     !form.startDate.trim() || !form.endDate.trim() || !form.basicMonthlySalary.trim();
   const canShowEstimate = !hasBlockingErrors;
+  const liveErrorMessage = useMemo(() => {
+    if (form.startDate && form.endDate && errors.endDate) {
+      return errors.endDate;
+    }
+    if (errors.startDate) {
+      return errors.startDate;
+    }
+    if (errors.endDate) {
+      return errors.endDate;
+    }
+    if (errors.basicMonthlySalary) {
+      return errors.basicMonthlySalary;
+    }
+    if (errors.unpaidLeaveDays) {
+      return errors.unpaidLeaveDays;
+    }
+    return "";
+  }, [errors, form.startDate, form.endDate]);
 
   const printHref = buildPrintUrl(form);
 
@@ -366,6 +385,9 @@ export default function Calculator() {
           title="EOS / Gratuity Calculator"
           subtitle="Use this estimate tool for planning scenarios. Final legal and payroll outcomes should be reviewed separately."
         />
+        <p className="sr-only" aria-live="polite" role="status">
+          {liveErrorMessage}
+        </p>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2">
           <Card>

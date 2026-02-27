@@ -40,7 +40,7 @@ test("invalid dates return zero with warning", () => {
   assert.equal(result.gratuityAmount, 0);
   assert.ok(
     result.warnings.some((warning) =>
-      warning.includes("Invalid startDate or endDate"),
+      warning.includes("Please choose valid dates"),
     ),
   );
 });
@@ -108,7 +108,7 @@ test("long durations and end-before-start produce warnings", () => {
   });
   assert.equal(reversed.gratuityAmount, 0);
   assert.ok(
-    reversed.warnings.some((warning) => warning.includes("before startDate")),
+    reversed.warnings.some((warning) => warning.includes("Please choose valid dates")),
   );
 });
 

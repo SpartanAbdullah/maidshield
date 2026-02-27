@@ -134,7 +134,9 @@ export function calculateGratuityEstimate(
   const end = parseDateInput(input.endDate);
 
   if (!start || !end) {
-    warnings.push("Invalid startDate or endDate. Use an ISO-like valid date string.");
+    warnings.push(
+      "Please choose valid dates; the end date must be after the start date.",
+    );
     const breakdownLines = buildBreakdownLines({
       serviceDays: 0,
       unpaidLeaveDeducted: 0,
@@ -154,7 +156,9 @@ export function calculateGratuityEstimate(
   }
 
   if (end < start) {
-    warnings.push("endDate is before startDate. Gratuity estimate set to 0.");
+    warnings.push(
+      "Please choose valid dates; the end date must be after the start date.",
+    );
     const breakdownLines = buildBreakdownLines({
       serviceDays: 0,
       unpaidLeaveDeducted: 0,
