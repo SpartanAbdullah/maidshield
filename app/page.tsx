@@ -87,10 +87,18 @@ export default function Home() {
                 Get a clear, printable end-of-service estimate in minutes.
                 Avoid mistakes and close your case with confidence.
               </p>
+              <p className="mt-3 max-w-xl text-sm text-slate-600">
+                Mistakes in final settlement can lead to disputes or delays. Use
+                a structured estimate before finalizing payment.
+              </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="https://app.maidshield.com"
-                  className={buttonClassName("primary", "md", "shadow-sm")}
+                  className={buttonClassName(
+                    "primary",
+                    "md",
+                    "h-11 px-6 text-base shadow-sm"
+                  )}
                 >
                   Calculate Now
                 </Link>
@@ -102,12 +110,16 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-              <img
-                src="/images/calculator-preview.png"
-                alt="MaidShield calculator interface preview"
-                className="h-auto w-full object-cover"
-              />
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-sm text-slate-500">Service Duration</p>
+              <p className="mt-1 text-xl font-semibold tracking-tight text-slate-900">
+                2y 4m 10d
+              </p>
+              <div className="my-4 h-px bg-slate-200" />
+              <p className="text-sm text-slate-500">Estimated Gratuity</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+                AED 8,450.00
+              </p>
             </div>
           </div>
         </section>
