@@ -46,6 +46,27 @@ export function normalizeMoney(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
+function buildBreakdownLines(params: {
+  serviceDays: number;
+  unpaidLeaveDeducted: number;
+  adjustedServiceDays: number;
+  basicMonthlySalary: number;
+}): string[] {
+  const lines = [`Service days: ${params.serviceDays}`];
+
+  if (params.unpaidLeaveDeducted > 0) {
+    lines.push(`Unpaid leave deducted: ${params.unpaidLeaveDeducted} days`);
+  }
+
+  lines.push(`Adjusted service days: ${params.adjustedServiceDays}`);
+  lines.push(`Monthly basic salary: AED ${normalizeMoney(params.basicMonthlySalary).toFixed(2)}`);
+  lines.push(
+    "Gratuity estimate computed using MaidShield assumptions. This is an estimate, not legal advice.",
+  );
+
+  return lines;
+}
+
 export function calculateServiceDuration(
   startDate: string,
   endDate: string,
@@ -88,33 +109,9 @@ export function calculateGratuityEstimate(
     "Assumed accrual: 21 wage-days per service year for first 5 years, then 30 wage-days per year afterward.",
   ];
 
-  const start = parseDateInput(input.startDate);
-  const end = parseDateInput(input.endDate);
-
-  if (!start || !end) {
-    warnings.push("Invalid startDate or endDate. Use an ISO-like valid date string.");
-    return {
-      gratuityAmount: 0,
-      serviceDuration: { years: 0, months: 0, days: 0, totalDays: 0 },
-      assumptionsUsed,
-      warnings,
-    };
-  }
-
-  if (end < start) {
-    warnings.push("endDate is before startDate. Gratuity estimate set to 0.");
-    return {
-      gratuityAmount: 0,
-      serviceDuration: { years: 0, months: 0, days: 0, totalDays: 0 },
-      assumptionsUsed,
-      warnings,
-    };
-  }
-
-  if (!Number.isFinite(input.basicMonthlySalary) || input.basicMonthlySalary <= 0) {
-    warnings.push("basicMonthlySalary must be greater than 0.");
-  }
-
+  const basicMonthlySalary = Number.isFinite(input.basicMonthlySalary)
+    ? input.basicMonthlySalary
+    : 0;
   const rawUnpaidLeave = input.unpaidLeaveDays ?? 0;
   let unpaidLeaveDays = rawUnpaidLeave;
 
@@ -126,39 +123,109 @@ export function calculateGratuityEstimate(
     unpaidLeaveDays = 0;
   }
 
+  const inputsUsed = {
+    startDate: input.startDate,
+    endDate: input.endDate,
+    basicMonthlySalary: normalizeMoney(basicMonthlySalary),
+    unpaidLeaveDays,
+  };
+
+  const start = parseDateInput(input.startDate);
+  const end = parseDateInput(input.endDate);
+
+  if (!start || !end) {
+    warnings.push("Invalid startDate or endDate. Use an ISO-like valid date string.");
+    const breakdownLines = buildBreakdownLines({
+      serviceDays: 0,
+      unpaidLeaveDeducted: 0,
+      adjustedServiceDays: 0,
+      basicMonthlySalary,
+    });
+
+    return {
+      gratuityAmount: 0,
+      serviceDuration: { years: 0, months: 0, days: 0, totalDays: 0 },
+      adjustedServiceDays: 0,
+      inputsUsed,
+      breakdownLines,
+      assumptionsUsed,
+      warnings,
+    };
+  }
+
+  if (end < start) {
+    warnings.push("endDate is before startDate. Gratuity estimate set to 0.");
+    const breakdownLines = buildBreakdownLines({
+      serviceDays: 0,
+      unpaidLeaveDeducted: 0,
+      adjustedServiceDays: 0,
+      basicMonthlySalary,
+    });
+
+    return {
+      gratuityAmount: 0,
+      serviceDuration: { years: 0, months: 0, days: 0, totalDays: 0 },
+      adjustedServiceDays: 0,
+      inputsUsed,
+      breakdownLines,
+      assumptionsUsed,
+      warnings,
+    };
+  }
+
+  if (basicMonthlySalary <= 0) {
+    warnings.push("basicMonthlySalary must be greater than 0.");
+  }
+
   const serviceDuration = calculateServiceDuration(input.startDate, input.endDate);
 
   if (serviceDuration.totalDays > EXTREMELY_LONG_DURATION_DAYS) {
     warnings.push("Service duration is unusually long; verify dates and assumptions.");
   }
 
+  const cappedUnpaidLeaveDays = Math.min(unpaidLeaveDays, serviceDuration.totalDays);
+
   if (unpaidLeaveDays > serviceDuration.totalDays) {
     warnings.push("unpaidLeaveDays exceeds service duration and has been capped.");
   }
+
+  const adjustedServiceDays = Math.max(serviceDuration.totalDays - cappedUnpaidLeaveDays, 0);
+  const breakdownLines = buildBreakdownLines({
+    serviceDays: serviceDuration.totalDays,
+    unpaidLeaveDeducted: cappedUnpaidLeaveDays,
+    adjustedServiceDays,
+    basicMonthlySalary,
+  });
+  const sanitizedInputsUsed = {
+    ...inputsUsed,
+    unpaidLeaveDays: cappedUnpaidLeaveDays,
+  };
 
   if (warnings.some((warning) => warning.includes("basicMonthlySalary"))) {
     return {
       gratuityAmount: 0,
       serviceDuration,
+      adjustedServiceDays,
+      inputsUsed: sanitizedInputsUsed,
+      breakdownLines,
       assumptionsUsed,
       warnings,
     };
   }
 
-  const eligibleServiceDays = Math.max(
-    serviceDuration.totalDays - Math.min(unpaidLeaveDays, serviceDuration.totalDays),
-    0,
-  );
-  const serviceYears = eligibleServiceDays / 365;
+  const serviceYears = adjustedServiceDays / 365;
   const firstBandYears = Math.min(serviceYears, 5);
   const secondBandYears = Math.max(serviceYears - 5, 0);
   const accrualDays = firstBandYears * 21 + secondBandYears * 30;
-  const dailyBasicWage = input.basicMonthlySalary / 30;
+  const dailyBasicWage = basicMonthlySalary / 30;
   const gratuityAmount = normalizeMoney(dailyBasicWage * accrualDays);
 
   return {
     gratuityAmount,
     serviceDuration,
+    adjustedServiceDays,
+    inputsUsed: sanitizedInputsUsed,
+    breakdownLines,
     assumptionsUsed,
     warnings,
   };

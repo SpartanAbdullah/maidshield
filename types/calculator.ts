@@ -13,9 +13,19 @@ export type GratuityEstimateInput = {
   notes?: string;
 };
 
+export type GratuityInputsUsed = {
+  startDate: string;
+  endDate: string;
+  basicMonthlySalary: number;
+  unpaidLeaveDays: number;
+};
+
 export type GratuityEstimateOutput = {
   gratuityAmount: number;
   serviceDuration: ServiceDuration;
+  adjustedServiceDays: number;
+  inputsUsed: GratuityInputsUsed;
+  breakdownLines: string[];
   assumptionsUsed: string[];
   warnings: string[];
 };

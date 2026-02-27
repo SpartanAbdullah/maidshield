@@ -108,6 +108,23 @@ function formatScenarioDate(value: string) {
   });
 }
 
+function formatInputDate(value: string) {
+  if (!value) {
+    return "-";
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+}
+
 function buildPrintUrl(form: FormState): string {
   const params = new URLSearchParams();
 
@@ -367,6 +384,10 @@ export default function Calculator() {
                       {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
                       {estimate.serviceDuration.days}d
                     </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Total days: {estimate.serviceDuration.totalDays} | Adjusted service days:{" "}
+                      {estimate.adjustedServiceDays}
+                    </p>
                   </div>
 
                   <div>
@@ -395,6 +416,43 @@ export default function Calculator() {
                     )}
                   </div>
                 </div>
+
+                <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <h3 className="text-sm font-semibold text-slate-900">
+                    Calculation breakdown
+                  </h3>
+                  <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
+                    <div>
+                      <dt className="text-slate-500">Start Date</dt>
+                      <dd className="text-slate-800">
+                        {formatInputDate(estimate.inputsUsed.startDate)}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-slate-500">End Date</dt>
+                      <dd className="text-slate-800">
+                        {formatInputDate(estimate.inputsUsed.endDate)}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-slate-500">Basic Monthly Salary</dt>
+                      <dd className="text-slate-800">
+                        AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-slate-500">Unpaid Leave Days</dt>
+                      <dd className="text-slate-800">
+                        {estimate.inputsUsed.unpaidLeaveDays}
+                      </dd>
+                    </div>
+                  </dl>
+                  <ul className="mt-4 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                    {estimate.breakdownLines.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                </section>
 
                 <details className="mt-6 rounded-lg border border-slate-200 bg-slate-50">
                   <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">

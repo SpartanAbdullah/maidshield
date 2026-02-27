@@ -1,4 +1,4 @@
-import { calculateGratuityEstimate, normalizeMoney } from "@/lib/rules/uae_domestic_worker";
+import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import { Container } from "@/components/layout/Container";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
@@ -88,21 +88,25 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
               <dl className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
                 <div>
                   <dt className="text-slate-500">Start Date</dt>
-                  <dd className="text-slate-900">{formatDate(startDate)}</dd>
+                  <dd className="text-slate-900">
+                    {formatDate(estimate.inputsUsed.startDate)}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-slate-500">End Date</dt>
-                  <dd className="text-slate-900">{formatDate(endDate)}</dd>
+                  <dd className="text-slate-900">
+                    {formatDate(estimate.inputsUsed.endDate)}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-slate-500">Basic Monthly Salary</dt>
                   <dd className="text-slate-900">
-                    AED {normalizeMoney(basicMonthlySalary).toFixed(2)}
+                    AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-slate-500">Unpaid Leave Days</dt>
-                  <dd className="text-slate-900">{normalizeMoney(unpaidLeaveDays)}</dd>
+                  <dd className="text-slate-900">{estimate.inputsUsed.unpaidLeaveDays}</dd>
                 </div>
               </dl>
               {notes ? (
@@ -122,9 +126,24 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
                 Service Duration: {estimate.serviceDuration.years}y{" "}
                 {estimate.serviceDuration.months}m {estimate.serviceDuration.days}d
               </p>
+              <p className="text-xs text-slate-600">
+                Total days: {estimate.serviceDuration.totalDays} | Adjusted
+                service days: {estimate.adjustedServiceDays}
+              </p>
               <p className="text-xl font-semibold tracking-tight text-slate-900">
                 Estimated Gratuity: AED {estimate.gratuityAmount.toFixed(2)}
               </p>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+                Calculation Breakdown
+              </h2>
+              <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">
+                {estimate.breakdownLines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
             </section>
 
             <section className="space-y-3">
