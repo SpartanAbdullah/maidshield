@@ -81,6 +81,42 @@ export default function Home() {
           </div>
         </section>
 
+        <section aria-labelledby="trust-heading">
+          <h2
+            id="trust-heading"
+            className="text-2xl font-semibold tracking-tight text-slate-900"
+          >
+            Why trust MaidShield?
+          </h2>
+          <div className="mt-6 grid gap-5 md:grid-cols-3">
+            <Card>
+              <CardContent className="space-y-2">
+                <h3 className="text-base font-semibold text-slate-900">Privacy</h3>
+                <p className="text-sm leading-6 text-slate-600">
+                  No accounts required and no documents uploaded for core estimate
+                  workflows.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="space-y-2">
+                <h3 className="text-base font-semibold text-slate-900">Transparency</h3>
+                <p className="text-sm leading-6 text-slate-600">
+                  Every estimate shows calculation breakdown lines and assumptions.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="space-y-2">
+                <h3 className="text-base font-semibold text-slate-900">Speed</h3>
+                <p className="text-sm leading-6 text-slate-600">
+                  Instant estimate updates with a printable summary for handover.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
         <section
           aria-labelledby="how-it-works-heading"
           className="rounded-2xl border border-slate-200 bg-white px-6 py-8 sm:px-10 sm:py-10"

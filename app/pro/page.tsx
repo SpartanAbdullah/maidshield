@@ -24,7 +24,6 @@ export default function ProWaitlistPage() {
               <li>Unlimited print exports for settlement reviews and approvals.</li>
               <li>Reusable saved scenarios for faster comparison across cases.</li>
               <li>Structured employer checklist workflows in one workspace.</li>
-              <li>Shared operational records for cleaner handovers across teams.</li>
             </ul>
           </CardContent>
         </Card>
@@ -46,6 +45,16 @@ export default function ProWaitlistPage() {
           <p className="mt-2 text-sm text-slate-600">
             We will share rollout updates and onboarding windows as features
             become available.
+          </p>
+          <p className="mt-2 text-sm text-slate-600">
+            Already using MaidShield?{" "}
+            <a
+              href="https://app.maidshield.com/calculator"
+              className="font-medium text-slate-800 underline underline-offset-2"
+            >
+              Open the calculator
+            </a>
+            .
           </p>
           <LeadCapture source="pro_waitlist" className="mt-6 max-w-2xl" />
         </section>

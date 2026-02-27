@@ -28,6 +28,15 @@ type FormErrors = {
 
 const FREE_DAILY_PRINT_LIMIT = 2;
 const PRINT_USAGE_STORAGE_KEY = "maidshield.print_usage.v1";
+const EXAMPLE_FORM_VALUES: Pick<
+  FormState,
+  "startDate" | "endDate" | "basicMonthlySalary" | "unpaidLeaveDays"
+> = {
+  startDate: "2022-06-01",
+  endDate: "2025-05-31",
+  basicMonthlySalary: "2300",
+  unpaidLeaveDays: "12",
+};
 
 const initialFormState: FormState = {
   startDate: "",
@@ -137,11 +146,61 @@ function buildPrintUrl(form: FormState): string {
   return query ? `/calculator/print?${query}` : "/calculator/print";
 }
 
+function buildShareUrl(form: FormState): string {
+  const params = new URLSearchParams();
+
+  if (form.startDate) params.set("startDate", form.startDate);
+  if (form.endDate) params.set("endDate", form.endDate);
+  if (form.basicMonthlySalary) params.set("basicMonthlySalary", form.basicMonthlySalary);
+  if (form.unpaidLeaveDays) params.set("unpaidLeaveDays", form.unpaidLeaveDays);
+
+  const query = params.toString();
+  const pathname = query ? `/calculator?${query}` : "/calculator";
+
+  if (typeof window === "undefined") {
+    return pathname;
+  }
+
+  return `${window.location.origin}${pathname}`;
+}
+
+async function copyToClipboard(value: string): Promise<boolean> {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+  } catch {
+    // Continue to legacy fallback.
+  }
+
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = value;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return copied;
+  } catch {
+    return false;
+  }
+}
+
 export default function Calculator() {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [printLimitMessage, setPrintLimitMessage] = useState("");
   const [scenarioTitle, setScenarioTitle] = useState("");
   const [savedScenarios, setSavedScenarios] = useState<Scenario[]>([]);
+  const [shareLinkMessage, setShareLinkMessage] = useState("");
+  const [postPrintUpsellVisible, setPostPrintUpsellVisible] = useState(false);
 
   useEffect(() => {
     track("calculator_view");
@@ -182,6 +241,9 @@ export default function Calculator() {
 
   const hasBlockingErrors =
     Boolean(errors.startDate) || Boolean(errors.endDate) || Boolean(errors.basicMonthlySalary);
+  const missingRequiredInputs =
+    !form.startDate.trim() || !form.endDate.trim() || !form.basicMonthlySalary.trim();
+  const canShowEstimate = !hasBlockingErrors;
 
   const printHref = buildPrintUrl(form);
 
@@ -206,6 +268,40 @@ export default function Calculator() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function handleTryExampleClick() {
+    const hasAnyTypedValue = Boolean(
+      form.startDate || form.endDate || form.basicMonthlySalary || form.unpaidLeaveDays,
+    );
+
+    if (
+      hasAnyTypedValue &&
+      !window.confirm("Replace current form values with an example scenario?")
+    ) {
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      ...EXAMPLE_FORM_VALUES,
+    }));
+    setPrintLimitMessage("");
+    setShareLinkMessage("");
+    track("example_used");
+  }
+
+  async function handleCopyShareLinkClick() {
+    const shareUrl = buildShareUrl(form);
+    const copied = await copyToClipboard(shareUrl);
+
+    if (copied) {
+      setShareLinkMessage("Share link copied.");
+      track("share_link_copied");
+      return;
+    }
+
+    setShareLinkMessage("Could not copy link. Copy from the browser address bar.");
+  }
+
   function handlePrintClick() {
     if (hasBlockingErrors) return;
 
@@ -220,7 +316,11 @@ export default function Calculator() {
 
     setPrintLimitMessage("");
     track("print_click");
-    window.open(printHref, "_blank", "noopener,noreferrer");
+    const printWindow = window.open(printHref, "_blank", "noopener,noreferrer");
+    if (printWindow) {
+      setPostPrintUpsellVisible(true);
+      track("post_print_upsell_shown");
+    }
   }
 
   function handleJoinWaitlistClick() {
@@ -274,6 +374,19 @@ export default function Calculator() {
               <p className="text-sm text-slate-600">
                 Update values to refresh the estimate instantly.
               </p>
+              <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={handleTryExampleClick}
+                >
+                  Try Example
+                </Button>
+                <p className="text-xs text-slate-600">
+                  Load a realistic sample case to see a meaningful estimate quickly.
+                </p>
+              </div>
 
               <Input
                 type="date"
@@ -362,8 +475,14 @@ export default function Calculator() {
                     >
                       Save scenario
                     </Button>
+                    <Button variant="ghost" onClick={handleCopyShareLinkClick}>
+                      Copy Share Link
+                    </Button>
                   </div>
                 </div>
+                {shareLinkMessage ? (
+                  <p className="mt-3 text-xs text-slate-600">{shareLinkMessage}</p>
+                ) : null}
 
                 <Divider className="my-5" />
 
@@ -376,17 +495,31 @@ export default function Calculator() {
                 />
 
                 <div className="mt-5 space-y-4">
+                  {missingRequiredInputs ? (
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-sm text-slate-700">
+                        Enter start date, end date, and basic salary to see estimate.
+                      </p>
+                      <ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                        <li>Use basic salary</li>
+                        <li>Dates should match contract period</li>
+                        <li>Unpaid leave is optional</li>
+                      </ul>
+                    </div>
+                  ) : null}
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                       Service Duration
                     </p>
                     <p className="mt-1 text-sm text-slate-800">
-                      {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
-                      {estimate.serviceDuration.days}d
+                      {canShowEstimate
+                        ? `${estimate.serviceDuration.years}y ${estimate.serviceDuration.months}m ${estimate.serviceDuration.days}d`
+                        : "\u2014"}
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
-                      Total days: {estimate.serviceDuration.totalDays} | Adjusted service days:{" "}
-                      {estimate.adjustedServiceDays}
+                      Total days:{" "}
+                      {canShowEstimate ? estimate.serviceDuration.totalDays : "\u2014"} | Adjusted
+                      service days: {canShowEstimate ? estimate.adjustedServiceDays : "\u2014"}
                     </p>
                   </div>
 
@@ -395,7 +528,7 @@ export default function Calculator() {
                       Estimated Gratuity
                     </p>
                     <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-                      AED {estimate.gratuityAmount.toFixed(2)}
+                      {canShowEstimate ? `AED ${estimate.gratuityAmount.toFixed(2)}` : "\u2014"}
                     </p>
                   </div>
 
@@ -403,7 +536,11 @@ export default function Calculator() {
                     <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                       Warnings
                     </p>
-                    {estimate.warnings.length === 0 ? (
+                    {!canShowEstimate ? (
+                      <p className="mt-1 text-sm text-slate-600">
+                        Complete required inputs to review warnings and assumptions.
+                      </p>
+                    ) : estimate.warnings.length === 0 ? (
                       <p className="mt-1 text-sm text-slate-600">No warnings.</p>
                     ) : (
                       <ul className="mt-2 space-y-2 text-sm text-amber-700">
@@ -454,6 +591,34 @@ export default function Calculator() {
                   </ul>
                 </section>
 
+                <section className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <h3 className="text-sm font-semibold text-slate-900">
+                    What this includes / excludes
+                  </h3>
+                  <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                        Includes
+                      </p>
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                        <li>Service duration</li>
+                        <li>Salary-based estimate</li>
+                        <li>Unpaid leave adjustment</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                        Excludes
+                      </p>
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                        <li>Legal edge cases</li>
+                        <li>Disputes</li>
+                        <li>Allowances and government fees</li>
+                      </ul>
+                    </div>
+                  </div>
+                </section>
+
                 <details className="mt-6 rounded-lg border border-slate-200 bg-slate-50">
                   <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">
                     Assumptions &amp; Notes
@@ -481,6 +646,20 @@ export default function Calculator() {
                 <p className="mt-3 text-xs text-slate-500">
                   PDF export uses your browser print dialog and does not store files on the server.
                 </p>
+                {postPrintUpsellVisible ? (
+                  <p className="mt-2 text-xs text-slate-600">
+                    Printed successfully. Want unlimited prints &amp; saved scenarios?{" "}
+                    <a
+                      href="/pro"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-slate-800 underline underline-offset-2"
+                    >
+                      Join Pro waitlist
+                    </a>
+                    .
+                  </p>
+                ) : null}
 
                 <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
                   <h3 className="text-sm font-semibold text-slate-900">MaidShield Pro</h3>

@@ -148,6 +148,34 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
 
             <section className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+                What This Includes / Excludes
+              </h2>
+              <div className="grid gap-4 text-sm sm:grid-cols-2">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Includes
+                  </p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+                    <li>Service duration</li>
+                    <li>Salary-based estimate</li>
+                    <li>Unpaid leave adjustment</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Excludes
+                  </p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+                    <li>Legal edge cases</li>
+                    <li>Disputes</li>
+                    <li>Allowances and government fees</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
                 Warnings & Assumptions
               </h2>
               {estimate.warnings.length > 0 ? (
