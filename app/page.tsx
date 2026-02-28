@@ -5,6 +5,7 @@ import { LeadCapture } from "@/components/forms/LeadCapture";
 import { Container } from "@/components/layout/Container";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Divider } from "@/components/ui/Divider";
 
 export const metadata: Metadata = {
   title: "MaidShield | UAE Domestic Worker Gratuity Calculator",
@@ -291,14 +292,69 @@ export default function Home() {
               Private by design
             </h2>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
-              <li>• No accounts required</li>
-              <li>• No documents uploaded</li>
-              <li>• Estimates calculated instantly</li>
+              <li>&bull; No accounts required</li>
+              <li>&bull; No documents uploaded</li>
+              <li>&bull; Estimates calculated instantly</li>
             </ul>
             <p className="mt-4 text-xs leading-6 text-slate-500">
               Estimates are for planning purposes and do not constitute legal
               advice.
             </p>
+          </div>
+        </section>
+
+        <section aria-labelledby="faq-heading">
+          <div className="mx-auto max-w-3xl">
+            <h2
+              id="faq-heading"
+              className="text-2xl font-semibold tracking-tight text-slate-900"
+            >
+              Common questions
+            </h2>
+            <div className="mt-6 rounded-xl border border-slate-200 bg-white px-6 py-2">
+              <details className="py-4">
+                <summary className="cursor-pointer text-sm font-medium text-slate-900">
+                  Is this legally accurate?
+                </summary>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  MaidShield provides a structured estimate with assumptions shown clearly. For edge cases, confirm the final position with your PRO, HR advisor, or legal counsel.
+                </p>
+              </details>
+              <Divider />
+              <details className="py-4">
+                <summary className="cursor-pointer text-sm font-medium text-slate-900">
+                  Do I need to create an account?
+                </summary>
+                <p className="mt-3 text-sm leading-6 text-slate-600">No.</p>
+              </details>
+              <Divider />
+              <details className="py-4">
+                <summary className="cursor-pointer text-sm font-medium text-slate-900">
+                  Do you store my salary or dates?
+                </summary>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  No, calculations are client-side; no document uploads.
+                </p>
+              </details>
+              <Divider />
+              <details className="py-4">
+                <summary className="cursor-pointer text-sm font-medium text-slate-900">
+                  What salary should I enter?
+                </summary>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  Use the basic monthly salary used for settlement planning; exclude allowances unless legally required for your case.
+                </p>
+              </details>
+              <Divider />
+              <details className="py-4">
+                <summary className="cursor-pointer text-sm font-medium text-slate-900">
+                  Can I print or share the result?
+                </summary>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  Yes, print-friendly summary and share link.
+                </p>
+              </details>
+            </div>
           </div>
         </section>
 
@@ -325,4 +381,7 @@ export default function Home() {
     </main>
   );
 }
+
+
+
 
