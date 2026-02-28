@@ -81,7 +81,7 @@ export default function Home() {
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-                Calculate Domestic Worker Gratuity in UAE — The Right Way
+                Calculate Domestic Worker Gratuity in UAE \u2014 The Right Way
               </h1>
               <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
                 Get a clear, printable end-of-service estimate in minutes.
@@ -91,13 +91,16 @@ export default function Home() {
                 Mistakes in final settlement can lead to disputes or delays. Use
                 a structured estimate before finalizing payment.
               </p>
+              <p className="mt-2 text-xs text-slate-500">
+                No account required. No documents uploaded.
+              </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="https://app.maidshield.com"
                   className={buttonClassName(
                     "primary",
                     "md",
-                    "h-11 px-6 text-base shadow-sm"
+                    "h-12 px-7 text-base font-semibold shadow-sm"
                   )}
                 >
                   Calculate Now
@@ -117,7 +120,7 @@ export default function Home() {
               </p>
               <div className="my-4 h-px bg-slate-200" />
               <p className="text-sm text-slate-500">Estimated Gratuity</p>
-              <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+              <p className="mt-1 text-4xl font-semibold tracking-tight text-slate-900">
                 AED 8,450.00
               </p>
             </div>
@@ -255,47 +258,47 @@ export default function Home() {
           </div>
         </section>
 
-        <section aria-labelledby="social-proof-heading">
-          <h2
-            id="social-proof-heading"
-            className="text-2xl font-semibold tracking-tight text-slate-900"
-          >
-            Social Proof
-          </h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-3">
-            <Card>
-              <CardContent className="space-y-3">
-                <p className="text-sm leading-6 text-slate-600">
-                  "MaidShield made our final settlement review faster and much
-                  clearer."
-                </p>
-                <p className="text-sm font-medium text-slate-900">
-                  Jane D., Household Manager
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="space-y-3">
-                <p className="text-sm leading-6 text-slate-600">
-                  "The breakdown gave us confidence before discussing final
-                  amounts."
-                </p>
-                <p className="text-sm font-medium text-slate-900">
-                  Omar K., Employer
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="space-y-3">
-                <p className="text-sm leading-6 text-slate-600">
-                  "Simple enough for quick checks, structured enough for team
-                  handover."
-                </p>
-                <p className="text-sm font-medium text-slate-900">
-                  Sara M., Operations Lead
-                </p>
-              </CardContent>
-            </Card>
+        <section aria-labelledby="structure-heading">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2
+              id="structure-heading"
+              className="text-2xl font-semibold tracking-tight text-slate-900"
+            >
+              How calculations are structured
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-slate-600">
+              MaidShield estimates are based on publicly available UAE domestic
+              worker regulations and standard end-of-service principles.
+            </p>
+            <p className="mt-4 text-sm leading-7 text-slate-600">
+              Every estimate shows service duration, salary inputs, and
+              calculation assumptions so you can review how the result was
+              generated.
+            </p>
+            <p className="mt-4 text-xs leading-6 text-slate-500">
+              This tool provides structured estimates for planning purposes and
+              does not replace formal legal advice.
+            </p>
+          </div>
+        </section>
+
+        <section aria-labelledby="trust-bar-heading">
+          <div className="mx-auto max-w-5xl rounded-xl border border-slate-200 bg-slate-50 px-6 py-6">
+            <h2
+              id="trust-bar-heading"
+              className="text-lg font-semibold text-slate-900"
+            >
+              Private by design
+            </h2>
+            <ul className="mt-3 space-y-2 text-sm text-slate-600">
+              <li>• No accounts required</li>
+              <li>• No documents uploaded</li>
+              <li>• Estimates calculated instantly</li>
+            </ul>
+            <p className="mt-4 text-xs leading-6 text-slate-500">
+              Estimates are for planning purposes and do not constitute legal
+              advice.
+            </p>
           </div>
         </section>
 
@@ -322,3 +325,4 @@ export default function Home() {
     </main>
   );
 }
+
