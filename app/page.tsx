@@ -374,7 +374,13 @@ export default function Home() {
         <section>
           <p className="text-xs leading-5 text-slate-500">
             Estimates are for planning purposes only and do not constitute legal
-            advice.
+            advice.{" "}
+            <Link
+              href="/sources"
+              className="font-medium text-slate-600 underline underline-offset-2"
+            >
+              Sources &amp; assumptions
+            </Link>
           </p>
         </section>
       </Container>

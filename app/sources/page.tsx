@@ -1,0 +1,143 @@
+import type { Metadata } from "next";
+
+import { Container } from "@/components/layout/Container";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/Card";
+import { Divider } from "@/components/ui/Divider";
+
+export const metadata: Metadata = {
+  title: "Sources & assumptions | MaidShield",
+  description:
+    "How MaidShield produces estimates and what to verify before final settlement.",
+};
+
+const keyAssumptions = [
+  "Uses the start and end dates entered by the user.",
+  "Uses the basic monthly salary entered by the user.",
+  "Reduces counted service days when unpaid leave days are provided.",
+  "Provides an estimate for planning that should be confirmed for the actual case.",
+];
+
+const verificationSteps = [
+  "Confirm the dates match the contract period and visa timeline.",
+  "Confirm which salary definition should be used for settlement.",
+  "Keep payment proof, receipts, and signed acknowledgements together.",
+  "If anything is unclear, confirm the final position with your PRO, HR advisor, or legal counsel.",
+];
+
+const privacyPoints = [
+  "No account is required to use the calculator.",
+  "No documents are uploaded as part of the estimate flow.",
+  "Calculator inputs are not stored on the server for the calculation itself.",
+];
+
+export default function SourcesPage() {
+  return (
+    <main className="min-h-screen bg-slate-50 py-12 sm:py-16">
+      <Container className="max-w-3xl space-y-8">
+        <PageHeader
+          title="Sources & assumptions"
+          subtitle="How MaidShield produces estimates and what to verify before final settlement."
+        />
+
+        <Card>
+          <CardContent className="space-y-6">
+            <section className="space-y-3">
+              <h2 className="text-base font-semibold text-slate-900">
+                What MaidShield does
+              </h2>
+              <p className="text-sm leading-6 text-slate-700">
+                MaidShield gives household employers a structured estimate to
+                help with planning before final settlement.
+              </p>
+              <p className="text-sm leading-6 text-slate-700">
+                Each estimate shows the service duration, the inputs used, and
+                the breakdown lines behind the result so the numbers can be
+                reviewed before payment.
+              </p>
+            </section>
+
+            <Divider />
+
+            <section className="space-y-3">
+              <h2 className="text-base font-semibold text-slate-900">
+                What MaidShield does NOT do
+              </h2>
+              <p className="text-sm leading-6 text-slate-700">
+                MaidShield is not a legal advice service and should not be used
+                as the only basis for a final settlement decision.
+              </p>
+              <p className="text-sm leading-6 text-slate-700">
+                It does not resolve edge cases, disputes, allowances,
+                government fees, or special contract clauses that may affect
+                the final amount.
+              </p>
+            </section>
+
+            <Divider />
+
+            <section className="space-y-3">
+              <h2 className="text-base font-semibold text-slate-900">
+                Key assumptions
+              </h2>
+              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                {keyAssumptions.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+
+            <Divider />
+
+            <section className="space-y-3">
+              <h2 className="text-base font-semibold text-slate-900">
+                What to verify before paying
+              </h2>
+              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                {verificationSteps.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+
+            <Divider />
+
+            <section className="space-y-3">
+              <h2 className="text-base font-semibold text-slate-900">
+                Privacy note
+              </h2>
+              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                {privacyPoints.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="space-y-4">
+            <h2 className="text-base font-semibold text-slate-900">
+              Next step
+            </h2>
+            <p className="text-sm leading-6 text-slate-700">
+              Use the calculator for a planning estimate, then confirm the final
+              figures against your records before making payment.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <form action="https://app.maidshield.com/calculator">
+                <Button type="submit">Open calculator</Button>
+              </form>
+              <form action="/checklist">
+                <Button type="submit" variant="secondary">
+                  View checklist
+                </Button>
+              </form>
+            </div>
+          </CardContent>
+        </Card>
+      </Container>
+    </main>
+  );
+}

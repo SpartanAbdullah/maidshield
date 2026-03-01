@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import { Container } from "@/components/layout/Container";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -207,6 +209,14 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
               <p>
                 No professional advisory relationship is created by using this
                 tool. Confirm final values with qualified professionals.
+              </p>
+              <p>
+                <Link
+                  href="/sources"
+                  className="font-medium text-slate-600 underline underline-offset-2"
+                >
+                  Sources &amp; assumptions
+                </Link>
               </p>
             </section>
           </CardContent>

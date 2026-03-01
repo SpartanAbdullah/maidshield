@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
@@ -581,9 +582,17 @@ export default function Calculator() {
                 </div>
 
                 <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                  <h3 className="text-sm font-semibold text-slate-900">
-                    Calculation breakdown
-                  </h3>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Calculation breakdown
+                    </h3>
+                    <Link
+                      href="/sources"
+                      className="text-xs font-medium text-slate-600 underline underline-offset-2 hover:text-slate-800"
+                    >
+                      Sources &amp; assumptions
+                    </Link>
+                  </div>
                   <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
                     <div>
                       <dt className="text-slate-500">Start Date</dt>
