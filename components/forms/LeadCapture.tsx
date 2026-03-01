@@ -31,7 +31,7 @@ function validateEmail(email: string) {
 }
 
 export function LeadCapture({
-  source = "www",
+  source = "landing",
   className,
 }: LeadCaptureProps) {
   const [email, setEmail] = useState("");
@@ -73,6 +73,8 @@ export function LeadCapture({
     setMessage("");
 
     try {
+      const page = source || window.location.pathname || "landing";
+
       const response = await fetch("/api/lead", {
         method: "POST",
         headers: {
@@ -81,7 +83,7 @@ export function LeadCapture({
         body: JSON.stringify({
           email: trimmedEmail,
           name: trimmedName,
-          source,
+          page,
           honey,
         }),
       });

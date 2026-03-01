@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 type LeadInput = {
   email?: unknown;
   name?: unknown;
+  page?: unknown;
   source?: unknown;
   honey?: unknown;
 };
@@ -32,6 +33,7 @@ export async function POST(request: NextRequest) {
 
   const email = normalizeString(payload.email);
   const name = normalizeString(payload.name);
+  const page = normalizeString(payload.page);
   const source = normalizeString(payload.source);
   const honey = normalizeString(payload.honey);
 
@@ -70,15 +72,19 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const timestamp = new Date().toISOString();
+    const pageValue = page || source || "landing";
+
     const webhookResponse = await fetch(webhookUrl, {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
       body: JSON.stringify({
+        timestamp,
         email,
         name,
-        source,
+        page: pageValue,
         userAgent: request.headers.get("user-agent") ?? "",
       }),
       cache: "no-store",
