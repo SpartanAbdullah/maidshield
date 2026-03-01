@@ -29,6 +29,10 @@ function validateMessage(message: string) {
     return "Message is required.";
   }
 
+  if (message.length < 10) {
+    return "Please enter at least 10 characters.";
+  }
+
   if (message.length > 2000) {
     return "Message must be 2000 characters or fewer.";
   }
@@ -63,8 +67,8 @@ export function FeedbackForm() {
     state === "loading"
       ? "Submitting..."
       : state === "success"
-        ? "Submitted"
-        : "Share feedback";
+        ? "Sent"
+        : "Send feedback";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -75,6 +79,7 @@ export function FeedbackForm() {
     const messageValidationError = validateMessage(trimmedMessage);
 
     if (emailValidationError || messageValidationError) {
+      track("feedback_submit_error");
       setState("error");
       setFormMessage(emailValidationError || messageValidationError);
       return;
@@ -93,7 +98,6 @@ export function FeedbackForm() {
           email: trimmedEmail,
           message: trimmedMessage,
           company,
-          source: "sources-page",
         }),
       });
 
@@ -113,11 +117,13 @@ export function FeedbackForm() {
 
       track("feedback_submit_error");
       setState("error");
-      setFormMessage(data?.error || "Unable to submit. Please try again.");
+      setFormMessage(
+        data?.error || "We couldn't send your feedback right now. Please try again."
+      );
     } catch {
       track("feedback_submit_error");
       setState("error");
-      setFormMessage("Unable to submit. Please try again.");
+      setFormMessage("We couldn't send your feedback right now. Please try again.");
     }
   }
 
@@ -173,7 +179,7 @@ export function FeedbackForm() {
         tabIndex={-1}
         autoComplete="organization"
         aria-hidden="true"
-        className="hidden"
+        className="sr-only"
         value={company}
         onChange={(event) => setCompany(event.target.value)}
       />

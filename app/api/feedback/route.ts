@@ -4,11 +4,19 @@ type FeedbackInput = {
   email?: unknown;
   message?: unknown;
   company?: unknown;
-  source?: unknown;
 };
 
 function normalizeString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function getRequestIp(request: NextRequest) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() ?? "";
+  }
+
+  return request.headers.get("x-real-ip") ?? "";
 }
 
 export async function POST(request: NextRequest) {
@@ -33,7 +41,6 @@ export async function POST(request: NextRequest) {
   const email = normalizeString(payload.email);
   const message = normalizeString(payload.message);
   const company = normalizeString(payload.company);
-  const source = normalizeString(payload.source);
 
   if (company) {
     return NextResponse.json({ ok: true });
@@ -42,6 +49,13 @@ export async function POST(request: NextRequest) {
   if (!message) {
     return NextResponse.json(
       { ok: false, error: "Message is required." },
+      { status: 400 }
+    );
+  }
+
+  if (message.length < 10) {
+    return NextResponse.json(
+      { ok: false, error: "Please enter at least 10 characters." },
       { status: 400 }
     );
   }
@@ -83,12 +97,14 @@ export async function POST(request: NextRequest) {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        kind: "feedback",
-        sheet: "feedback",
+        type: "feedback",
+        sheet: "Feedback",
+        timestamp: new Date().toISOString(),
         email,
         message,
-        source: source || "sources-page",
+        page: "sources",
         userAgent: request.headers.get("user-agent") ?? "",
+        ip: getRequestIp(request),
       }),
       cache: "no-store",
     });
