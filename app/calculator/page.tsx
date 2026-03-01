@@ -534,30 +534,32 @@ export default function Calculator() {
                       </ul>
                     </div>
                   ) : null}
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                      Service Duration
-                    </p>
-                    <p className="mt-1 text-sm text-slate-800">
-                      {canShowEstimate
-                        ? `${estimate.serviceDuration.years}y ${estimate.serviceDuration.months}m ${estimate.serviceDuration.days}d`
-                        : "\u2014"}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      Total days:{" "}
-                      {canShowEstimate ? estimate.serviceDuration.totalDays : "\u2014"} | Adjusted
-                      service days: {canShowEstimate ? estimate.adjustedServiceDays : "\u2014"}
-                    </p>
-                  </div>
+                  {canShowEstimate ? (
+                    <>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                          Service Duration
+                        </p>
+                        <p className="mt-1 text-sm text-slate-800">
+                          {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
+                          {estimate.serviceDuration.days}d
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          Total days: {estimate.serviceDuration.totalDays} | Adjusted service
+                          days: {estimate.adjustedServiceDays}
+                        </p>
+                      </div>
 
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                      Estimated Gratuity
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-                      {canShowEstimate ? `AED ${estimate.gratuityAmount.toFixed(2)}` : "\u2014"}
-                    </p>
-                  </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                          Estimated Gratuity
+                        </p>
+                        <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+                          AED {estimate.gratuityAmount.toFixed(2)}
+                        </p>
+                      </div>
+                    </>
+                  ) : null}
 
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -593,37 +595,49 @@ export default function Calculator() {
                       Sources &amp; assumptions
                     </Link>
                   </div>
-                  <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
-                    <div>
-                      <dt className="text-slate-500">Start Date</dt>
-                      <dd className="text-slate-800">
-                        {formatInputDate(estimate.inputsUsed.startDate)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-500">End Date</dt>
-                      <dd className="text-slate-800">
-                        {formatInputDate(estimate.inputsUsed.endDate)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-500">Basic Monthly Salary</dt>
-                      <dd className="text-slate-800">
-                        AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-500">Unpaid Leave Days</dt>
-                      <dd className="text-slate-800">
-                        {estimate.inputsUsed.unpaidLeaveDays}
-                      </dd>
-                    </div>
-                  </dl>
-                  <ul className="mt-4 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                    {estimate.breakdownLines.map((line) => (
-                      <li key={line}>{line}</li>
-                    ))}
-                  </ul>
+                  {canShowEstimate ? (
+                    <>
+                      <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
+                        <div>
+                          <dt className="text-slate-500">Start Date</dt>
+                          <dd className="text-slate-800">
+                            {formatInputDate(estimate.inputsUsed.startDate)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-500">End Date</dt>
+                          <dd className="text-slate-800">
+                            {formatInputDate(estimate.inputsUsed.endDate)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-500">Basic Monthly Salary</dt>
+                          <dd className="text-slate-800">
+                            AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-slate-500">Unpaid Leave Days</dt>
+                          <dd className="text-slate-800">
+                            {estimate.inputsUsed.unpaidLeaveDays}
+                          </dd>
+                        </div>
+                      </dl>
+                      <ul className="mt-4 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                        {estimate.breakdownLines.map((line) => (
+                          <li key={line}>{line}</li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : missingRequiredInputs ? (
+                    <p className="mt-3 text-sm text-slate-600">
+                      Enter start date, end date, and basic salary to see a full breakdown.
+                    </p>
+                  ) : (
+                    <p className="mt-3 text-sm text-slate-600">
+                      {liveErrorMessage || "Complete valid inputs to see a full breakdown."}
+                    </p>
+                  )}
                 </section>
 
                 <section className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
