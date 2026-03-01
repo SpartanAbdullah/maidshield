@@ -1,26 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/Button";
+import { APP_BASE_URL, MARKETING_BASE_URL } from "@/app/seo";
 import { Container } from "@/components/layout/Container";
+import { buttonClassName } from "@/components/ui/Button";
 
 const navLinks = [
-  { href: "/calculator", label: "Calculator" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/about", label: "About" },
+  {
+    href: `${APP_BASE_URL}/calculator`,
+    matchPath: "/calculator",
+    label: "Calculator",
+  },
+  {
+    href: `${MARKETING_BASE_URL}/pricing`,
+    matchPath: "/pricing",
+    label: "Pricing",
+  },
+  {
+    href: `${MARKETING_BASE_URL}/about`,
+    matchPath: "/about",
+    label: "About",
+  },
 ];
 
 export function TopNav() {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <header className="border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
       <Container className="flex h-16 items-center justify-between">
         <Link
-          href="/"
+          href={MARKETING_BASE_URL}
           className="text-lg font-semibold tracking-tight text-slate-900"
         >
           MaidShield
@@ -29,7 +41,7 @@ export function TopNav() {
         <nav className="flex items-center gap-5">
           {navLinks.map((link) => {
             const isActive =
-              pathname === link.href || pathname.startsWith(`${link.href}/`);
+              pathname === link.matchPath || pathname.startsWith(`${link.matchPath}/`);
 
             return (
               <Link
@@ -45,12 +57,12 @@ export function TopNav() {
               </Link>
             );
           })}
-          <Button
-            className="h-9 px-3.5"
-            onClick={() => router.push("/calculator")}
+          <Link
+            href={`${APP_BASE_URL}/calculator`}
+            className={buttonClassName("primary", "md", "h-9 px-3.5")}
           >
             Start
-          </Button>
+          </Link>
         </nav>
       </Container>
     </header>

@@ -1,6 +1,31 @@
+import type { Metadata } from "next";
+
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent } from "@/components/ui/Card";
+import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
+
+const pageTitle = "About";
+const pageDescription =
+  "Learn how MaidShield helps UAE household employers review domestic worker settlement estimates with clearer assumptions.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/about", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/about",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
+};
 
 export default function AboutPage() {
   return (

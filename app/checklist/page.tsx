@@ -1,9 +1,34 @@
+import type { Metadata } from "next";
+
 import { LeadCapture } from "@/components/forms/LeadCapture";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
+
+const pageTitle = "End-of-Service Checklist";
+const pageDescription =
+  "Use this UAE domestic worker end-of-service checklist to prepare documents, verify payments, and close out settlements cleanly.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/checklist", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/checklist",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
+};
 
 const checklistSections = [
   {

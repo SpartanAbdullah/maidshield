@@ -1,6 +1,31 @@
+import type { Metadata } from "next";
+
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent } from "@/components/ui/Card";
+import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
+
+const pageTitle = "Privacy Policy";
+const pageDescription =
+  "Read how MaidShield approaches privacy, data minimization, and household employer information handling in this MVP.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/privacy", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/privacy",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
+};
 
 export default function PrivacyPage() {
   return (

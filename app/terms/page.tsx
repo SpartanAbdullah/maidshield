@@ -1,6 +1,31 @@
+import type { Metadata } from "next";
+
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent } from "@/components/ui/Card";
+import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
+
+const pageTitle = "Terms";
+const pageDescription =
+  "Review the current MaidShield terms covering planning estimates, intended use, and limits of the MVP experience.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/terms", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/terms",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
+};
 
 export default function TermsPage() {
   return (

@@ -1,16 +1,98 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { JsonLd } from "@/components/seo/JsonLd";
 import { LeadCapture } from "@/components/forms/LeadCapture";
 import { Container } from "@/components/layout/Container";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import {
+  APP_BASE_URL,
+  MARKETING_BASE_URL,
+  buildOpenGraph,
+  buildTwitter,
+  makeCanonical,
+} from "@/app/seo";
+
+const pageTitle = "UAE Domestic Worker Gratuity Calculator";
+const pageDescription =
+  "Estimate UAE domestic worker gratuity and end-of-service payments with clear breakdowns, checklists, and assumptions for household employers.";
 
 export const metadata: Metadata = {
-  title: "MaidShield | UAE Domestic Worker Gratuity Calculator",
-  description:
-    "Get a clear, printable UAE domestic worker end-of-service estimate in minutes and avoid costly settlement mistakes.",
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
+};
+
+const faqItems = [
+  {
+    question: "Is this legally accurate?",
+    answer:
+      "MaidShield provides a structured estimate with assumptions shown clearly. For edge cases, confirm the final position with your PRO, HR advisor, or legal counsel.",
+  },
+  {
+    question: "Do I need to create an account?",
+    answer: "No.",
+  },
+  {
+    question: "Do you store my salary or dates?",
+    answer: "No, calculations are client-side; no document uploads.",
+  },
+  {
+    question: "What salary should I enter?",
+    answer:
+      "Use the basic monthly salary used for settlement planning; exclude allowances unless legally required for your case.",
+  },
+  {
+    question: "Can I print or share the result?",
+    answer: "Yes, print-friendly summary and share link.",
+  },
+];
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "MaidShield",
+  url: MARKETING_BASE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${APP_BASE_URL}/calculator?query={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "MaidShield",
+  url: MARKETING_BASE_URL,
+  logo: `${MARKETING_BASE_URL}/icons/icon-512.png`,
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqItems.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
 };
 
 type IconProps = {
@@ -77,40 +159,43 @@ function UsersIcon({ className }: IconProps) {
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50 py-16 sm:py-24">
+      <JsonLd data={websiteJsonLd} />
+      <JsonLd data={organizationJsonLd} />
+      <JsonLd data={faqJsonLd} />
+
       <Container className="space-y-16 sm:space-y-20">
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-14">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-                Calculate Domestic Worker Gratuity in UAE \u2014 The Right Way
+                UAE domestic worker gratuity calculator for household employers
               </h1>
               <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
                 Get a clear, printable end-of-service estimate in minutes.
                 Avoid mistakes and close your case with confidence.
               </p>
-              <p className="mt-3 max-w-xl text-sm text-slate-600">
-                Mistakes in final settlement can lead to disputes or delays. Use
-                a structured estimate before finalizing payment.
+              <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600">
+                MaidShield helps UAE household employers review domestic worker
+                end-of-service gratuity calculations before final settlement.
+                It keeps the inputs, assumptions, and payment planning details
+                in one place without making the process feel legalistic.
               </p>
               <p className="mt-2 text-xs text-slate-500">
                 No account required. No documents uploaded.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
-                  href="https://app.maidshield.com"
+                  href={`${APP_BASE_URL}/calculator`}
                   className={buttonClassName(
                     "primary",
                     "md",
                     "h-12 px-7 text-base font-semibold shadow-sm"
                   )}
                 >
-                  Calculate Now
+                  Calculate now
                 </Link>
-                <Link
-                  href="/checklist"
-                  className={buttonClassName("secondary")}
-                >
-                  View End-of-Service Checklist
+                <Link href="/checklist" className={buttonClassName("secondary")}>
+                  View end-of-service checklist
                 </Link>
               </div>
             </div>
@@ -175,7 +260,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section aria-labelledby="trust-heading">
+        <section
+          aria-labelledby="trust-heading"
+          className="rounded-2xl border border-slate-200 bg-white px-6 py-8 sm:px-10 sm:py-10"
+        >
           <h2
             id="trust-heading"
             className="text-2xl font-semibold tracking-tight text-slate-900"
@@ -291,49 +379,37 @@ export default function Home() {
             >
               Common questions
             </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              For a fuller view of how the estimate is produced, review{" "}
+              <Link
+                href="/sources"
+                className="font-medium text-slate-700 underline underline-offset-2"
+              >
+                sources and assumptions
+              </Link>{" "}
+              and keep the{" "}
+              <Link
+                href="/checklist"
+                className="font-medium text-slate-700 underline underline-offset-2"
+              >
+                end-of-service checklist
+              </Link>{" "}
+              nearby before final payment.
+            </p>
             <div className="mt-6 rounded-xl border border-slate-200 bg-white px-6 py-2">
-              <details className="py-4">
-                <summary className="cursor-pointer text-sm font-medium text-slate-900">
-                  Is this legally accurate?
-                </summary>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  MaidShield provides a structured estimate with assumptions shown clearly. For edge cases, confirm the final position with your PRO, HR advisor, or legal counsel.
-                </p>
-              </details>
-              <Divider />
-              <details className="py-4">
-                <summary className="cursor-pointer text-sm font-medium text-slate-900">
-                  Do I need to create an account?
-                </summary>
-                <p className="mt-3 text-sm leading-6 text-slate-600">No.</p>
-              </details>
-              <Divider />
-              <details className="py-4">
-                <summary className="cursor-pointer text-sm font-medium text-slate-900">
-                  Do you store my salary or dates?
-                </summary>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  No, calculations are client-side; no document uploads.
-                </p>
-              </details>
-              <Divider />
-              <details className="py-4">
-                <summary className="cursor-pointer text-sm font-medium text-slate-900">
-                  What salary should I enter?
-                </summary>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  Use the basic monthly salary used for settlement planning; exclude allowances unless legally required for your case.
-                </p>
-              </details>
-              <Divider />
-              <details className="py-4">
-                <summary className="cursor-pointer text-sm font-medium text-slate-900">
-                  Can I print or share the result?
-                </summary>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  Yes, print-friendly summary and share link.
-                </p>
-              </details>
+              {faqItems.map((item, index) => (
+                <div key={item.question}>
+                  <details className="py-4">
+                    <summary className="cursor-pointer text-sm font-medium text-slate-900">
+                      {item.question}
+                    </summary>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">
+                      {item.answer}
+                    </p>
+                  </details>
+                  {index < faqItems.length - 1 ? <Divider /> : null}
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -387,7 +463,3 @@ export default function Home() {
     </main>
   );
 }
-
-
-
-

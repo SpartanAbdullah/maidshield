@@ -4,14 +4,31 @@ import Link from "next/link";
 import { FeedbackForm } from "@/components/forms/FeedbackForm";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Button } from "@/components/ui/Button";
+import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
+
+const pageTitle = "Sources & Assumptions";
+const pageDescription =
+  "Review how MaidShield produces planning estimates, which assumptions it uses, and what to verify before final settlement.";
 
 export const metadata: Metadata = {
-  title: "Sources & assumptions | MaidShield",
-  description:
-    "How MaidShield produces estimates and what to verify before final settlement.",
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/sources", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/sources",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
 };
 
 const keyAssumptions = [
@@ -164,14 +181,15 @@ export default function SourcesPage() {
               figures against your records before making payment.
             </p>
             <div className="flex flex-wrap gap-3">
-              <form action="https://app.maidshield.com/calculator">
-                <Button type="submit">Open calculator</Button>
-              </form>
-              <form action="/checklist">
-                <Button type="submit" variant="secondary">
-                  View checklist
-                </Button>
-              </form>
+              <Link
+                href="https://app.maidshield.com/calculator"
+                className={buttonClassName()}
+              >
+                Open calculator
+              </Link>
+              <Link href="/checklist" className={buttonClassName("secondary")}>
+                View checklist
+              </Link>
             </div>
             <p className="text-sm text-slate-600">
               <Link

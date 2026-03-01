@@ -1,15 +1,34 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Button } from "@/components/ui/Button";
+import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { APP_BASE_URL, buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
+
+const pageTitle = "Pricing";
+const pageDescription =
+  "Compare MaidShield Free and Pro options for UAE household employers who need clear settlement estimates and stronger records.";
 
 export const metadata: Metadata = {
-  title: "Pricing | MaidShield",
-  description:
-    "Compare MaidShield Free and Pro to choose the right level of control for your household settlement workflow.",
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/pricing", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/pricing",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
 };
 
 const freeFeatures = [
@@ -41,15 +60,36 @@ const faqs = [
   },
 ];
 
+const pricingJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "MaidShield Pricing",
+  url: makeCanonical("/pricing", "www"),
+  description: pageDescription,
+  about: {
+    "@type": "SoftwareApplication",
+    name: "MaidShield",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+  },
+};
+
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-12 sm:py-16">
+      <JsonLd data={pricingJsonLd} />
+
       <Container className="space-y-8">
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-12">
           <PageHeader
             title="Pricing"
             subtitle="Start free. Upgrade when you need more control and peace of mind."
           />
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
+            Free is designed for UAE household employers handling one-off
+            end-of-service checks. Pro is for repeat cases, stronger records,
+            and teams that want a steadier workflow.
+          </p>
         </section>
 
         <section className="grid gap-5 md:grid-cols-2">
@@ -69,11 +109,12 @@ export default function PricingPage() {
                   <li key={feature}>{feature}</li>
                 ))}
               </ul>
-              <form action="https://app.maidshield.com/calculator">
-                <Button type="submit" variant="secondary">
-                  Open calculator
-                </Button>
-              </form>
+              <Link
+                href={`${APP_BASE_URL}/calculator`}
+                className={buttonClassName("secondary")}
+              >
+                Open calculator
+              </Link>
             </CardContent>
           </Card>
 
@@ -89,7 +130,8 @@ export default function PricingPage() {
                   </span>
                 </div>
                 <p className="text-sm leading-6 text-slate-700">
-                  For households and advisors who need stronger records and repeatable workflows.
+                  For households and advisors who need stronger records and
+                  repeatable workflows.
                 </p>
               </div>
               <Divider />
@@ -98,9 +140,9 @@ export default function PricingPage() {
                   <li key={feature}>{feature}</li>
                 ))}
               </ul>
-              <form action="/pro">
-                <Button type="submit">Join Pro waitlist</Button>
-              </form>
+              <Link href="/pro" className={buttonClassName()}>
+                Join Pro waitlist
+              </Link>
             </CardContent>
           </Card>
         </section>

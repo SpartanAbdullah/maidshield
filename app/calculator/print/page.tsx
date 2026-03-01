@@ -1,12 +1,37 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import { Container } from "@/components/layout/Container";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { MARKETING_BASE_URL, buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "Print Summary",
+  description: "Printable summary for MaidShield gratuity planning estimates.",
+  alternates: {
+    canonical: makeCanonical("/calculator", "app"),
+  },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+  openGraph: buildOpenGraph({
+    title: "Print Summary",
+    description: "Printable summary for MaidShield gratuity planning estimates.",
+    path: "/calculator",
+    base: "app",
+  }),
+  twitter: buildTwitter({
+    title: "Print Summary",
+    description: "Printable summary for MaidShield gratuity planning estimates.",
+  }),
+};
 
 type PrintPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -212,7 +237,7 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
               </p>
               <p>
                 <Link
-                  href="/sources"
+                  href={`${MARKETING_BASE_URL}/sources`}
                   className="font-medium text-slate-600 underline underline-offset-2"
                 >
                   Sources &amp; assumptions

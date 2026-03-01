@@ -1,9 +1,34 @@
+import type { Metadata } from "next";
+
 import { LeadCapture } from "@/components/forms/LeadCapture";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
+
+const pageTitle = "Pro Waitlist";
+const pageDescription =
+  "Join the MaidShield Pro waitlist for stronger household settlement records, reusable scenarios, and workflow upgrades.";
+
+export const metadata: Metadata = {
+  title: pageTitle,
+  description: pageDescription,
+  alternates: {
+    canonical: makeCanonical("/pro", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/pro",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
+};
 
 export default function ProWaitlistPage() {
   return (
