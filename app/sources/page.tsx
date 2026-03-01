@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -32,6 +33,12 @@ const privacyPoints = [
   "Calculator inputs are not stored on the server for the calculation itself.",
 ];
 
+const unsureSteps = [
+  "Confirm dates and salary definition with your PRO or HR advisor.",
+  "Keep receipts or bank transfer proof for payments.",
+  "If your case includes allowances, disputes, or special clauses, get formal guidance before final settlement.",
+];
+
 export default function SourcesPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-12 sm:py-16">
@@ -40,6 +47,7 @@ export default function SourcesPage() {
           title="Sources & assumptions"
           subtitle="How MaidShield produces estimates and what to verify before final settlement."
         />
+        <p className="text-xs text-slate-500">Last reviewed: Feb 2026</p>
 
         <Card>
           <CardContent className="space-y-6">
@@ -113,6 +121,39 @@ export default function SourcesPage() {
                 ))}
               </ul>
             </section>
+
+            <Divider />
+
+            <section className="space-y-3">
+              <h2 className="text-base font-semibold text-slate-900">
+                If you are unsure
+              </h2>
+              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                {unsureSteps.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="space-y-4">
+            <h2 className="text-base font-semibold text-slate-900">
+              Send feedback
+            </h2>
+            <p className="text-sm leading-6 text-slate-700">
+              If something looks off, tell us — we improve MaidShield based on
+              real UAE household cases.
+            </p>
+            <p className="text-xs text-slate-500">
+              No personal documents needed — describe your scenario generally.
+            </p>
+            <form action="mailto:abdullahportfolio5@gmail.com?subject=MaidShield%20Feedback">
+              <Button type="submit" variant="secondary">
+                Share feedback
+              </Button>
+            </form>
           </CardContent>
         </Card>
 
@@ -135,6 +176,14 @@ export default function SourcesPage() {
                 </Button>
               </form>
             </div>
+            <p className="text-sm text-slate-600">
+              <Link
+                href="/pro"
+                className="font-medium text-slate-700 underline underline-offset-2"
+              >
+                Join Pro waitlist
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </Container>
