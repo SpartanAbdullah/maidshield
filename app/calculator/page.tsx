@@ -385,6 +385,10 @@ export default function Calculator() {
           title="EOS / Gratuity Calculator"
           subtitle="Use this estimate tool for planning scenarios. Final legal and payroll outcomes should be reviewed separately."
         />
+        <p className="mt-3 border-l-2 border-slate-200 pl-3 text-xs text-slate-500">
+          Privacy note: calculations run in your browser. MaidShield does not store your
+          inputs.
+        </p>
         <p className="sr-only" aria-live="polite" role="status">
           {liveErrorMessage}
         </p>
