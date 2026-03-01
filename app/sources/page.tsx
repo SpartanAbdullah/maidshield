@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { FeedbackForm } from "@/components/forms/FeedbackForm";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -143,17 +144,13 @@ export default function SourcesPage() {
               Send feedback
             </h2>
             <p className="text-sm leading-6 text-slate-700">
-              If something looks off, tell us — we improve MaidShield based on
+              If something looks off, tell us - we improve MaidShield based on
               real UAE household cases.
             </p>
             <p className="text-xs text-slate-500">
-              No personal documents needed — describe your scenario generally.
+              No personal documents needed - describe your scenario generally.
             </p>
-            <form action="mailto:abdullahportfolio5@gmail.com?subject=MaidShield%20Feedback">
-              <Button type="submit" variant="secondary">
-                Share feedback
-              </Button>
-            </form>
+            <FeedbackForm />
           </CardContent>
         </Card>
 
