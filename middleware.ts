@@ -7,7 +7,7 @@ const ROOT_HOST = "maidshield.com";
 
 // Keep this small and explicit for MVP.
 const APP_PATH_PREFIXES = ["/calculator"];
-const MARKETING_PATHS = ["/", "/about", "/privacy", "/terms", "/health"];
+const MARKETING_PATHS = ["/", "/about", "/privacy", "/terms", "/health", "/sources", "/checklist", "/pro"];
 
 function isAppPath(pathname: string) {
   return APP_PATH_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
