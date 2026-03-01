@@ -283,26 +283,6 @@ export default function Home() {
           </div>
         </section>
 
-        <section aria-labelledby="trust-bar-heading">
-          <div className="mx-auto max-w-5xl rounded-xl border border-slate-200 bg-slate-50 px-6 py-6">
-            <h2
-              id="trust-bar-heading"
-              className="text-lg font-semibold text-slate-900"
-            >
-              Private by design
-            </h2>
-            <ul className="mt-3 space-y-2 text-sm text-slate-600">
-              <li>&bull; No accounts required</li>
-              <li>&bull; No documents uploaded</li>
-              <li>&bull; Estimates calculated instantly</li>
-            </ul>
-            <p className="mt-4 text-xs leading-6 text-slate-500">
-              Estimates are for planning purposes and do not constitute legal
-              advice.
-            </p>
-          </div>
-        </section>
-
         <section aria-labelledby="faq-heading">
           <div className="mx-auto max-w-3xl">
             <h2
@@ -355,6 +335,26 @@ export default function Home() {
                 </p>
               </details>
             </div>
+          </div>
+        </section>
+
+        <section className="bg-slate-50" aria-labelledby="trust-bar-heading">
+          <div className="mx-auto max-w-4xl rounded-xl border border-slate-200 bg-slate-50 px-6 py-5">
+            <h2
+              id="trust-bar-heading"
+              className="text-2xl font-semibold tracking-tight text-slate-900"
+            >
+              Private by design
+            </h2>
+            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-slate-600">
+              <li>No accounts required</li>
+              <li>No documents uploaded</li>
+              <li>Estimates calculated instantly in your browser</li>
+            </ul>
+            <p className="mt-3 text-xs leading-5 text-slate-500">
+              MaidShield provides structured estimates for planning and does not
+              replace formal legal review.
+            </p>
           </div>
         </section>
 
