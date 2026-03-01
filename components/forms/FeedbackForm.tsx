@@ -117,13 +117,11 @@ export function FeedbackForm() {
 
       track("feedback_submit_error");
       setState("error");
-      setFormMessage(
-        data?.error || "We couldn't send your feedback right now. Please try again."
-      );
+      setFormMessage(data?.error || "Could not send feedback. Please try again.");
     } catch {
       track("feedback_submit_error");
       setState("error");
-      setFormMessage("We couldn't send your feedback right now. Please try again.");
+      setFormMessage("Could not send feedback. Please try again.");
     }
   }
 
