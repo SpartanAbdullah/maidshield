@@ -7,6 +7,14 @@
   --brand-red: #EA4335;
   --brand-yellow: #FBBC05;
   --brand-green: #34A853;
+  --g-blue: #1A73E8;
+  --g-red: #EA4335;
+  --g-yellow: #FBBC05;
+  --g-green: #34A853;
+  --tint-blue: rgba(26, 115, 232, 0.08);
+  --tint-red: rgba(234, 67, 53, 0.08);
+  --tint-yellow: rgba(251, 188, 5, 0.10);
+  --tint-green: rgba(52, 168, 83, 0.08);
   --accent: var(--brand-blue);
   --accent-foreground: #ffffff;
   --border: #E2E8F0;
