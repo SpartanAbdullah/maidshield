@@ -4,9 +4,11 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Badge } from "@/components/ui/Badge";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { Icon } from "@/components/ui/Icon";
 import { APP_BASE_URL, buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 
 const pageTitle = "Pricing";
@@ -32,18 +34,30 @@ export const metadata: Metadata = {
 };
 
 const freeFeatures = [
-  "Unlimited estimates",
-  "Breakdown + assumptions",
-  "Share link",
-  "Print summary (limited)",
-];
+  { label: "Unlimited estimates", icon: "check", colorVariant: "success" as const },
+  { label: "Breakdown + assumptions", icon: "check", colorVariant: "success" as const },
+  { label: "Share link", icon: "info", colorVariant: "neutral" as const },
+  { label: "Print summary (limited)", icon: "file", colorVariant: "neutral" as const },
+] as const;
 
 const proFeatures = [
-  "Unlimited prints",
-  "Saved scenarios (multiple workers/cases)",
-  "Export-ready printable records",
-  "Priority updates and improvements",
-];
+  { label: "Unlimited prints", icon: "check", colorVariant: "success" as const },
+  {
+    label: "Saved scenarios (multiple workers/cases)",
+    icon: "check",
+    colorVariant: "success" as const,
+  },
+  {
+    label: "Export-ready printable records",
+    icon: "file",
+    colorVariant: "info" as const,
+  },
+  {
+    label: "Priority updates and improvements",
+    icon: "lightning",
+    colorVariant: "info" as const,
+  },
+] as const;
 
 const faqs = [
   {
@@ -95,20 +109,29 @@ export default function PricingPage() {
         <section className="grid gap-5 md:grid-cols-2">
           <Card>
             <CardContent className="space-y-5">
+              <div className="-mx-6 -mt-6 rounded-t-xl border-b border-slate-200 bg-slate-50 px-6 py-4 sm:-mx-8 sm:px-8">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="neutral">FREE</Badge>
+                </div>
+              </div>
               <div className="space-y-2">
-                <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
-                  Free
-                </p>
                 <p className="text-sm leading-6 text-slate-700">
                   Best for one-off checks and everyday household planning.
                 </p>
               </div>
               <Divider />
-              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+              <div className="space-y-3">
                 {freeFeatures.map((feature) => (
-                  <li key={feature}>{feature}</li>
+                  <div key={feature.label} className="flex items-start gap-3">
+                    <Icon
+                      name={feature.icon}
+                      colorVariant={feature.colorVariant}
+                      className="mt-0.5 h-4 w-4 shrink-0"
+                    />
+                    <p className="text-sm leading-6 text-slate-700">{feature.label}</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
               <Link
                 href={`${APP_BASE_URL}/calculator`}
                 className={buttonClassName("secondary")}
@@ -120,26 +143,31 @@ export default function PricingPage() {
 
           <Card>
             <CardContent className="space-y-5">
-              <div className="space-y-2">
+              <div className="-mx-6 -mt-6 rounded-t-xl border-b border-[color:var(--g-blue)]/10 bg-[var(--tint-blue)] px-6 py-4 sm:-mx-8 sm:px-8">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
-                    Pro
-                  </p>
-                  <span className="rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-500">
-                    Coming soon
-                  </span>
+                  <Badge variant="info">PRO</Badge>
+                  <Badge variant="warning">Coming soon</Badge>
                 </div>
+              </div>
+              <div className="space-y-2">
                 <p className="text-sm leading-6 text-slate-700">
                   For households and advisors who need stronger records and
                   repeatable workflows.
                 </p>
               </div>
               <Divider />
-              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+              <div className="space-y-3">
                 {proFeatures.map((feature) => (
-                  <li key={feature}>{feature}</li>
+                  <div key={feature.label} className="flex items-start gap-3">
+                    <Icon
+                      name={feature.icon}
+                      colorVariant={feature.colorVariant}
+                      className="mt-0.5 h-4 w-4 shrink-0"
+                    />
+                    <p className="text-sm leading-6 text-slate-700">{feature.label}</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
               <Link href="/pro" className={buttonClassName()}>
                 Join Pro waitlist
               </Link>
