@@ -6,9 +6,11 @@ import { useEffect, useMemo, useState } from "react";
 import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { Icon } from "@/components/ui/Icon";
 import { Input } from "@/components/ui/Input";
 import { track } from "@/lib/analytics";
 import {
@@ -488,6 +490,7 @@ export default function Calculator() {
                           : "Opens print-friendly summary in a new tab"
                       }
                     >
+                      <Icon name="file" className="h-4 w-4" />
                       Download/Print PDF
                     </Button>
                     <Button
@@ -500,9 +503,11 @@ export default function Calculator() {
                           : "Save this input set for later"
                       }
                     >
+                      <Icon name="check" className="h-4 w-4" />
                       Save scenario
                     </Button>
                     <Button variant="ghost" onClick={handleCopyShareLinkClick}>
+                      <Icon name="link" className="h-4 w-4" />
                       Copy Share Link
                     </Button>
                   </div>
@@ -572,10 +577,18 @@ export default function Calculator() {
                     ) : estimate.warnings.length === 0 ? (
                       <p className="mt-1 text-sm text-slate-600">No warnings.</p>
                     ) : (
-                      <ul className="mt-2 space-y-2 text-sm text-amber-700">
+                      <ul className="mt-2 space-y-2 text-sm text-[color:#b77900]">
                         {estimate.warnings.map((warning) => (
-                          <li key={warning} className="rounded-md bg-amber-50 px-3 py-2">
-                            {warning}
+                          <li
+                            key={warning}
+                            className="flex items-start gap-2 rounded-md border border-[color:var(--g-yellow)]/25 bg-[var(--tint-yellow)] px-3 py-2"
+                          >
+                            <Icon
+                              name="warning"
+                              colorVariant="warning"
+                              className="mt-0.5 h-4 w-4 shrink-0"
+                            />
+                            <span>{warning}</span>
                           </li>
                         ))}
                       </ul>
@@ -583,17 +596,23 @@ export default function Calculator() {
                   </div>
                 </div>
 
-                <section className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <section className="mt-6 rounded-lg border border-slate-200 bg-white p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-slate-900">
-                      Calculation breakdown
-                    </h3>
-                    <Link
-                      href="/sources"
-                      className="text-xs font-medium text-slate-600 underline underline-offset-2 hover:text-slate-800"
-                    >
-                      Sources &amp; assumptions
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Icon name="info" colorVariant="info" className="h-4 w-4" />
+                      <h3 className="text-sm font-semibold text-slate-900">
+                        Calculation breakdown
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href="/sources"
+                        className="text-xs font-medium text-slate-600 underline underline-offset-2 hover:text-slate-800"
+                      >
+                        Sources &amp; assumptions
+                      </Link>
+                      <Badge variant="info">Info</Badge>
+                    </div>
                   </div>
                   {canShowEstimate ? (
                     <>
@@ -668,11 +687,11 @@ export default function Calculator() {
                   </div>
                 </section>
 
-                <details className="mt-6 rounded-lg border border-slate-200 bg-slate-50">
+                <details className="mt-6 rounded-lg border border-slate-200 border-l-2 border-l-[var(--g-blue)] bg-[var(--tint-blue)]">
                   <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">
                     Assumptions &amp; Notes
                   </summary>
-                  <div className="space-y-3 px-4 pb-4 text-sm text-slate-600">
+                  <div className="space-y-3 px-4 pb-4 text-sm text-slate-700">
                     <ul className="space-y-2">
                       {estimate.assumptionsUsed.map((assumption) => (
                         <li key={assumption} className="leading-6">

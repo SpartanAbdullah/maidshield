@@ -1,6 +1,13 @@
 import type { ReactNode, SVGProps } from "react";
 
-type IconName = "check" | "shield" | "info" | "warning" | "lightning" | "file";
+type IconName =
+  | "check"
+  | "shield"
+  | "info"
+  | "warning"
+  | "lightning"
+  | "file"
+  | "link";
 type ColorVariant = "info" | "success" | "warning" | "danger" | "neutral";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "color"> & {
@@ -54,6 +61,13 @@ const iconPaths: Record<IconName, ReactNode> = {
       <path d="M14 3.5V8h4" />
       <path d="M9 12h6" />
       <path d="M9 15h6" />
+    </>
+  ),
+  link: (
+    <>
+      <path d="M10.2 13.8 8.1 16a3 3 0 1 1-4.2-4.2l2.1-2.1" />
+      <path d="M13.8 10.2 15.9 8a3 3 0 0 1 4.2 4.2L18 14.3" />
+      <path d="m9 15 6-6" />
     </>
   ),
 };
