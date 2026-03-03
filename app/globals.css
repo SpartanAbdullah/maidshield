@@ -3,11 +3,21 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
+  --brand-blue: #1A73E8;
+  --brand-red: #EA4335;
+  --brand-yellow: #FBBC05;
+  --brand-green: #34A853;
+  --accent: var(--brand-blue);
+  --accent-foreground: #ffffff;
+  --border: #E2E8F0;
+  --muted: #475569;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
