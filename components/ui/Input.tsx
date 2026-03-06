@@ -28,8 +28,9 @@ export function Input({
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
 
   const inputClasses = [
-    "block h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900",
+    "block h-10 w-full rounded-xl border bg-white px-3 text-sm text-slate-900",
     "placeholder:text-slate-400",
+    "transition-[background-color,border-color,box-shadow] duration-200 ease-out",
     "focus:outline-none focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--accent)_25%,white)] focus:ring-offset-2 focus:ring-offset-white",
     "disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed",
     error ? "border-rose-400 focus:ring-rose-200" : "border-slate-300 hover:border-slate-400",

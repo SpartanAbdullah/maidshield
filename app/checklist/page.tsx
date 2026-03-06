@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
 import { LeadCapture } from "@/components/forms/LeadCapture";
 import { Container } from "@/components/layout/Container";
@@ -11,6 +12,139 @@ import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 const pageTitle = "End-of-Service Checklist";
 const pageDescription =
   "Use this UAE domestic worker end-of-service checklist to prepare documents, verify payments, and close out settlements cleanly.";
+
+type ChecklistSection = {
+  title: string;
+  items: ReactNode[];
+};
+
+const checklistSections: ChecklistSection[] = [
+  {
+    title: "1) Before the final month (documents & verification)",
+    items: [
+      <>
+        <strong>Service period:</strong> Confirm employment start date, contract terms,
+        and any amendments in one file.
+      </>,
+      <>
+        <strong>Documentation:</strong> Collect passport copy, Emirates ID copy, visa
+        details, and labor-related records.
+      </>,
+      <>
+        <strong>Leave records:</strong> Check attendance logs and written leave approvals
+        to avoid last-minute disputes.
+      </>,
+      <>
+        <strong>Salary records:</strong> Align household records with payroll history
+        before final calculations begin.
+      </>,
+    ],
+  },
+  {
+    title: "2) Salary & leave reconciliation",
+    items: [
+      <>
+        <strong>Salary records:</strong> Reconcile monthly salary paid versus contractual
+        basic salary.
+      </>,
+      <>
+        <strong>Final payment:</strong> Calculate pending salary days up to the final
+        working date.
+      </>,
+      <>
+        <strong>Leave records:</strong> Review annual leave balance and agree on leave
+        encashment approach.
+      </>,
+      <>
+        <strong>Signature:</strong> Document any agreed deductions with signed
+        acknowledgement where required.
+      </>,
+    ],
+  },
+  {
+    title: "3) Gratuity / EOS settlement preparation (what inputs matter)",
+    items: [
+      <>
+        <strong>Service period:</strong> Confirm it using exact start and end dates.
+      </>,
+      <>
+        <strong>Salary records:</strong> Use the correct basic salary value for gratuity
+        assumptions.
+      </>,
+      <>
+        <strong>Leave records:</strong> Account for unpaid leave periods where policy or
+        law affects service calculation.
+      </>,
+      <>
+        <strong>Settlement confirmation:</strong> Prepare a line-item estimate so both
+        sides can review the same numbers.
+      </>,
+    ],
+  },
+  {
+    title: "4) Visa / cancellation / PRO coordination (high level)",
+    items: [
+      <>
+        <strong>Visa cancellation:</strong> Coordinate the cancellation timeline with your
+        PRO and relevant portals.
+      </>,
+      <>
+        <strong>Documentation:</strong> Confirm medical, ID, and residency status actions
+        needed for closure.
+      </>,
+      <>
+        <strong>Government fees:</strong> Track each fee and who is responsible for the
+        payment.
+      </>,
+      <>
+        <strong>Clearance:</strong> Keep a dated checklist of each cancellation step and
+        completion proof.
+      </>,
+    ],
+  },
+  {
+    title: "5) Final day handover (keys, accommodation, receipts)",
+    items: [
+      <>
+        <strong>Clearance:</strong> Collect keys, access cards, and household items
+        against a signed list.
+      </>,
+      <>
+        <strong>Documentation:</strong> Settle accommodation and utility arrangements
+        where applicable.
+      </>,
+      <>
+        <strong>Final payment:</strong> Issue a final payment receipt with clear amount
+        breakdown.
+      </>,
+      <>
+        <strong>Signature:</strong> Capture signatures from both parties on final handover
+        confirmation.
+      </>,
+    ],
+  },
+  {
+    title: "6) After completion (retain receipts, bank transfer proof)",
+    items: [
+      <>
+        <strong>Settlement confirmation:</strong> Archive bank transfer confirmations,
+        signed receipts, and settlement summary.
+      </>,
+      <>
+        <strong>Visa cancellation:</strong> Retain cancellation evidence and any official
+        transaction references.
+      </>,
+      <>
+        <strong>Documentation:</strong> Store records in a single folder for audit and
+        future reference.
+      </>,
+      <>
+        <strong>Clearance review:</strong> Set an internal reminder to improve the process
+        for the next case.
+      </>,
+    ],
+  },
+];
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -29,63 +163,6 @@ export const metadata: Metadata = {
     description: pageDescription,
   }),
 };
-
-const checklistSections = [
-  {
-    title: "1) Before the final month (documents & verification)",
-    items: [
-      "Confirm employment start date, contract terms, and any amendments in one file.",
-      "Collect passport copy, Emirates ID copy, visa details, and labor-related records.",
-      "Check attendance logs and written leave approvals to avoid last-minute disputes.",
-      "Align household records with payroll history before final calculations begin.",
-    ],
-  },
-  {
-    title: "2) Salary & leave reconciliation",
-    items: [
-      "Reconcile monthly salary paid versus contractual basic salary.",
-      "Calculate pending salary days up to the final working date.",
-      "Review annual leave balance and agree on leave encashment approach.",
-      "Document any agreed deductions with signed acknowledgement where required.",
-    ],
-  },
-  {
-    title: "3) Gratuity / EOS settlement preparation (what inputs matter)",
-    items: [
-      "Confirm exact service period using start and end dates.",
-      "Use the correct basic salary value for gratuity assumptions.",
-      "Account for unpaid leave periods where policy or law affects service calculation.",
-      "Prepare a line-item estimate so both sides can review the same numbers.",
-    ],
-  },
-  {
-    title: "4) Visa / cancellation / PRO coordination (high level)",
-    items: [
-      "Coordinate cancellation timeline with your PRO and relevant portals.",
-      "Confirm medical, ID, and residency status actions needed for closure.",
-      "Track government fees and who is responsible for each payment.",
-      "Keep a dated checklist of each cancellation step and completion proof.",
-    ],
-  },
-  {
-    title: "5) Final day handover (keys, accommodation, receipts)",
-    items: [
-      "Collect keys, access cards, and household items against a signed list.",
-      "Settle accommodation and utility arrangements where applicable.",
-      "Issue final payment receipt with clear amount breakdown.",
-      "Capture signatures from both parties on final handover confirmation.",
-    ],
-  },
-  {
-    title: "6) After completion (retain receipts, bank transfer proof)",
-    items: [
-      "Archive bank transfer confirmations, signed receipts, and settlement summary.",
-      "Retain cancellation evidence and any official transaction references.",
-      "Store records in a single folder for audit and future reference.",
-      "Set an internal review reminder to improve the process for the next case.",
-    ],
-  },
-];
 
 export default function ChecklistPage() {
   return (
@@ -117,8 +194,8 @@ export default function ChecklistPage() {
                   </h3>
                   <Divider className="my-4" />
                   <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-600">
-                    {section.items.map((item) => (
-                      <li key={item}>{item}</li>
+                    {section.items.map((item, index) => (
+                      <li key={`${section.title}-${index}`}>{item}</li>
                     ))}
                   </ul>
                 </CardContent>

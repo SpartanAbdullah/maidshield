@@ -10,7 +10,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors " +
+  "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-[background-color,border-color,color,box-shadow] duration-200 ease-out " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 " +
   "disabled:pointer-events-none disabled:opacity-50";
 
@@ -21,7 +21,7 @@ const sizes: Record<ButtonSize, string> = {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-[var(--accent)] text-[var(--accent-foreground)] hover:brightness-95 active:brightness-90",
+    "bg-[var(--accent)] text-white hover:text-white hover:brightness-95 active:text-white active:brightness-90",
   secondary:
     "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 active:bg-slate-100",
   ghost:

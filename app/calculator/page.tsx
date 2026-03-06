@@ -286,8 +286,23 @@ export default function Calculator() {
     });
   }, [form]);
 
+  const notesFieldClassName = [
+    "calculator-field block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400",
+    "focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-white",
+    "hover:border-slate-400",
+    form.notes.trim() ? "calculator-field--filled" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function getFilledFieldClass(value: string, error?: string) {
+    return value.trim() && !error
+      ? "calculator-field calculator-field--filled"
+      : "calculator-field";
   }
 
   function handleTryExampleClick() {
@@ -396,14 +411,14 @@ export default function Calculator() {
           {liveErrorMessage}
         </p>
 
-        <section className="mt-8 grid gap-6 lg:grid-cols-2">
-          <Card>
+        <section className="mt-8 grid gap-5 lg:grid-cols-2 lg:items-start">
+          <Card className="lg:col-start-1">
             <CardContent className="space-y-4">
               <h2 className="text-base font-semibold text-slate-900">Employment Inputs</h2>
               <p className="text-sm text-slate-600">
                 Update values to refresh the estimate instantly.
               </p>
-              <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <Button
                   type="button"
                   size="sm"
@@ -423,6 +438,7 @@ export default function Calculator() {
                 value={form.startDate}
                 onChange={(event) => updateField("startDate", event.target.value)}
                 error={errors.startDate}
+                className={getFilledFieldClass(form.startDate, errors.startDate)}
               />
 
               <Input
@@ -431,6 +447,7 @@ export default function Calculator() {
                 value={form.endDate}
                 onChange={(event) => updateField("endDate", event.target.value)}
                 error={errors.endDate}
+                className={getFilledFieldClass(form.endDate, errors.endDate)}
               />
 
               <Input
@@ -442,6 +459,10 @@ export default function Calculator() {
                 onChange={(event) => updateField("basicMonthlySalary", event.target.value)}
                 error={errors.basicMonthlySalary}
                 hint="Enter base monthly wage used for gratuity estimation."
+                className={getFilledFieldClass(
+                  form.basicMonthlySalary,
+                  errors.basicMonthlySalary,
+                )}
               />
 
               <Input
@@ -452,6 +473,7 @@ export default function Calculator() {
                 value={form.unpaidLeaveDays}
                 onChange={(event) => updateField("unpaidLeaveDays", event.target.value)}
                 error={errors.unpaidLeaveDays}
+                className={getFilledFieldClass(form.unpaidLeaveDays, errors.unpaidLeaveDays)}
               />
 
               <div className="space-y-1.5">
@@ -467,333 +489,338 @@ export default function Calculator() {
                   value={form.notes}
                   onChange={(event) => updateField("notes", event.target.value)}
                   placeholder="Add internal context for this estimate..."
-                  className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-white"
+                  className={notesFieldClassName}
                 />
               </div>
             </CardContent>
           </Card>
 
-          <div className="space-y-6">
-            <Card>
-              <CardContent>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="text-base font-semibold text-slate-900">Live Summary</h2>
+          <Card className="lg:col-start-2">
+            <CardContent>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-base font-semibold text-slate-900">Live Summary</h2>
 
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="secondary"
-                      disabled={hasBlockingErrors}
-                      onClick={handlePrintClick}
-                      title={
-                        hasBlockingErrors
-                          ? "Complete required fields to enable print summary"
-                          : "Opens print-friendly summary in a new tab"
-                      }
-                    >
-                      <Icon name="file" className="h-4 w-4" />
-                      Download/Print PDF
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      disabled={hasBlockingErrors}
-                      onClick={handleSaveScenario}
-                      title={
-                        hasBlockingErrors
-                          ? "Complete required fields to save a scenario"
-                          : "Save this input set for later"
-                      }
-                    >
-                      <Icon name="check" className="h-4 w-4" />
-                      Save scenario
-                    </Button>
-                    <Button variant="ghost" onClick={handleCopyShareLinkClick}>
-                      <Icon name="link" className="h-4 w-4" />
-                      Copy Share Link
-                    </Button>
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={hasBlockingErrors}
+                    onClick={handlePrintClick}
+                    title={
+                      hasBlockingErrors
+                        ? "Complete required fields to enable print summary"
+                        : "Opens print-friendly summary in a new tab"
+                    }
+                  >
+                    <Icon name="file" className="h-4 w-4" />
+                    Download/Print PDF
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={hasBlockingErrors}
+                    onClick={handleSaveScenario}
+                    title={
+                      hasBlockingErrors
+                        ? "Complete required fields to save a scenario"
+                        : "Save this input set for later"
+                    }
+                  >
+                    <Icon name="check" className="h-4 w-4" />
+                    Save scenario
+                  </Button>
+                  <Button variant="ghost" onClick={handleCopyShareLinkClick}>
+                    <Icon name="link" className="h-4 w-4" />
+                    Copy Share Link
+                  </Button>
                 </div>
-                {shareLinkMessage ? (
-                  <p className="mt-3 text-xs text-slate-600">{shareLinkMessage}</p>
+              </div>
+              {shareLinkMessage ? (
+                <p className="mt-3 text-xs text-slate-600">{shareLinkMessage}</p>
+              ) : null}
+
+              <Divider className="my-5" />
+
+              <Input
+                label="Scenario title (optional)"
+                placeholder="Example: March review"
+                value={scenarioTitle}
+                onChange={(event) => setScenarioTitle(event.target.value)}
+                hint={`If left empty, it will be saved as "Scenario - ${getTodayKey()}".`}
+              />
+
+              <div className="mt-5 space-y-4">
+                {missingRequiredInputs ? (
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-700">
+                      Enter start date, end date, and basic salary to see estimate.
+                    </p>
+                    <ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                      <li>Use basic salary</li>
+                      <li>Dates should match contract period</li>
+                      <li>Unpaid leave is optional</li>
+                    </ul>
+                  </div>
+                ) : null}
+                {canShowEstimate ? (
+                  <>
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                        Service Duration
+                      </p>
+                      <p className="mt-1 text-sm text-slate-800">
+                        {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
+                        {estimate.serviceDuration.days}d
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Total days: {estimate.serviceDuration.totalDays} | Adjusted service
+                        days: {estimate.adjustedServiceDays}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                        Estimated Gratuity
+                      </p>
+                      <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+                        AED {estimate.gratuityAmount.toFixed(2)}
+                      </p>
+                    </div>
+                  </>
                 ) : null}
 
-                <Divider className="my-5" />
-
-                <Input
-                  label="Scenario title (optional)"
-                  placeholder="Example: March review"
-                  value={scenarioTitle}
-                  onChange={(event) => setScenarioTitle(event.target.value)}
-                  hint={`If left empty, it will be saved as "Scenario - ${getTodayKey()}".`}
-                />
-
-                <div className="mt-5 space-y-4">
-                  {missingRequiredInputs ? (
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-sm text-slate-700">
-                        Enter start date, end date, and basic salary to see estimate.
-                      </p>
-                      <ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                        <li>Use basic salary</li>
-                        <li>Dates should match contract period</li>
-                        <li>Unpaid leave is optional</li>
-                      </ul>
-                    </div>
-                  ) : null}
-                  {canShowEstimate ? (
-                    <>
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                          Service Duration
-                        </p>
-                        <p className="mt-1 text-sm text-slate-800">
-                          {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
-                          {estimate.serviceDuration.days}d
-                        </p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          Total days: {estimate.serviceDuration.totalDays} | Adjusted service
-                          days: {estimate.adjustedServiceDays}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                          Estimated Gratuity
-                        </p>
-                        <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-                          AED {estimate.gratuityAmount.toFixed(2)}
-                        </p>
-                      </div>
-                    </>
-                  ) : null}
-
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                      Warnings
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    Warnings
+                  </p>
+                  {!canShowEstimate ? (
+                    <p className="mt-1 text-sm text-slate-600">
+                      Complete required inputs to review warnings and assumptions.
                     </p>
-                    {!canShowEstimate ? (
-                      <p className="mt-1 text-sm text-slate-600">
-                        Complete required inputs to review warnings and assumptions.
-                      </p>
-                    ) : estimate.warnings.length === 0 ? (
-                      <p className="mt-1 text-sm text-slate-600">No warnings.</p>
-                    ) : (
-                      <ul className="mt-2 space-y-2 text-sm text-[color:#b77900]">
-                        {estimate.warnings.map((warning) => (
-                          <li
-                            key={warning}
-                            className="flex items-start gap-2 rounded-md border border-[color:var(--g-yellow)]/25 bg-[var(--tint-yellow)] px-3 py-2"
-                          >
-                            <Icon
-                              name="warning"
-                              colorVariant="warning"
-                              className="mt-0.5 h-4 w-4 shrink-0"
-                            />
-                            <span>{warning}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-
-                <section className="mt-6 rounded-lg border border-slate-200 bg-white p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Icon name="info" colorVariant="info" className="h-4 w-4" />
-                      <h3 className="text-sm font-semibold text-slate-900">
-                        Calculation breakdown
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href="/sources"
-                        className="text-xs font-medium text-slate-600 underline underline-offset-2 hover:text-slate-800"
-                      >
-                        Sources &amp; assumptions
-                      </Link>
-                      <Badge variant="info">Info</Badge>
-                    </div>
-                  </div>
-                  {canShowEstimate ? (
-                    <>
-                      <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
-                        <div>
-                          <dt className="text-slate-500">Start Date</dt>
-                          <dd className="text-slate-800">
-                            {formatInputDate(estimate.inputsUsed.startDate)}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="text-slate-500">End Date</dt>
-                          <dd className="text-slate-800">
-                            {formatInputDate(estimate.inputsUsed.endDate)}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="text-slate-500">Basic Monthly Salary</dt>
-                          <dd className="text-slate-800">
-                            AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="text-slate-500">Unpaid Leave Days</dt>
-                          <dd className="text-slate-800">
-                            {estimate.inputsUsed.unpaidLeaveDays}
-                          </dd>
-                        </div>
-                      </dl>
-                      <ul className="mt-4 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                        {estimate.breakdownLines.map((line) => (
-                          <li key={line}>{line}</li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : missingRequiredInputs ? (
-                    <p className="mt-3 text-sm text-slate-600">
-                      Enter start date, end date, and basic salary to see a full breakdown.
-                    </p>
+                  ) : estimate.warnings.length === 0 ? (
+                    <p className="mt-1 text-sm text-slate-600">No warnings.</p>
                   ) : (
-                    <p className="mt-3 text-sm text-slate-600">
-                      {liveErrorMessage || "Complete valid inputs to see a full breakdown."}
-                    </p>
-                  )}
-                </section>
-
-                <section className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                  <h3 className="text-sm font-semibold text-slate-900">
-                    What this includes / excludes
-                  </h3>
-                  <div className="mt-3 grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                        Includes
-                      </p>
-                      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                        <li>Service duration</li>
-                        <li>Salary-based estimate</li>
-                        <li>Unpaid leave adjustment</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                        Excludes
-                      </p>
-                      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                        <li>Legal edge cases</li>
-                        <li>Disputes</li>
-                        <li>Allowances and government fees</li>
-                      </ul>
-                    </div>
-                  </div>
-                </section>
-
-                <details className="mt-6 rounded-lg border border-slate-200 border-l-2 border-l-[var(--g-blue)] bg-[var(--tint-blue)]">
-                  <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">
-                    Assumptions &amp; Notes
-                  </summary>
-                  <div className="space-y-3 px-4 pb-4 text-sm text-slate-700">
-                    <ul className="space-y-2">
-                      {estimate.assumptionsUsed.map((assumption) => (
-                        <li key={assumption} className="leading-6">
-                          {assumption}
+                    <ul className="mt-2 space-y-2 text-sm text-[color:#b77900]">
+                      {estimate.warnings.map((warning) => (
+                        <li
+                          key={warning}
+                          className="flex items-start gap-2 rounded-lg border border-[color:var(--g-yellow)]/25 bg-[var(--tint-yellow)] px-3 py-2"
+                        >
+                          <Icon
+                            name="warning"
+                            colorVariant="warning"
+                            className="mt-0.5 h-4 w-4 shrink-0"
+                          />
+                          <span>{warning}</span>
                         </li>
                       ))}
                     </ul>
-
-                    {form.notes.trim() ? (
-                      <>
-                        <Divider />
-                        <p className="text-slate-700">
-                          <span className="font-medium">User note:</span> {form.notes}
-                        </p>
-                      </>
-                    ) : null}
-                  </div>
-                </details>
-
-                <p className="mt-3 text-xs text-slate-500">
-                  PDF export uses your browser print dialog and does not store files on the server.
-                </p>
-                {postPrintUpsellVisible ? (
-                  <p className="mt-2 text-xs text-slate-600">
-                    Printed successfully. Want unlimited prints &amp; saved scenarios?{" "}
-                    <a
-                      href="/pro"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium text-slate-800 underline underline-offset-2"
-                    >
-                      Join Pro waitlist
-                    </a>
-                    .
-                  </p>
-                ) : null}
-
-                <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <h3 className="text-sm font-semibold text-slate-900">MaidShield Pro</h3>
-                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
-                    <li>Unlimited prints</li>
-                    <li>Save scenarios</li>
-                    <li>Employer checklist (coming soon)</li>
-                  </ul>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="mt-4"
-                    onClick={handleJoinWaitlistClick}
-                  >
-                    Join waitlist for Pro
-                  </Button>
-                  {printLimitMessage ? (
-                    <p className="mt-3 text-sm text-slate-700">{printLimitMessage}</p>
-                  ) : null}
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            <Card>
-              <CardContent className="space-y-4">
-                <h3 className="text-base font-semibold text-slate-900">Saved scenarios</h3>
-                {savedScenarios.length === 0 ? (
-                  <p className="text-sm text-slate-600">
-                    No saved scenarios yet. Save one from the summary panel.
+              <section className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Icon name="info" colorVariant="info" className="h-4 w-4" />
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Calculation breakdown
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href="/sources"
+                      className="text-xs font-medium text-slate-600 underline underline-offset-2 hover:text-slate-800"
+                    >
+                      Sources &amp; assumptions
+                    </Link>
+                    <Badge variant="info">Info</Badge>
+                  </div>
+                </div>
+                {canShowEstimate ? (
+                  <>
+                    <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
+                      <div>
+                        <dt className="text-slate-500">Start Date</dt>
+                        <dd className="text-slate-800">
+                          {formatInputDate(estimate.inputsUsed.startDate)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-500">End Date</dt>
+                        <dd className="text-slate-800">
+                          {formatInputDate(estimate.inputsUsed.endDate)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-500">Basic Monthly Salary</dt>
+                        <dd className="text-slate-800">
+                          AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-500">Unpaid Leave Days</dt>
+                        <dd className="text-slate-800">
+                          {estimate.inputsUsed.unpaidLeaveDays}
+                        </dd>
+                      </div>
+                    </dl>
+                    <ul className="mt-4 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                      {estimate.breakdownLines.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : missingRequiredInputs ? (
+                  <p className="mt-3 text-sm text-slate-600">
+                    Enter start date, end date, and basic salary to see a full breakdown.
                   </p>
                 ) : (
-                  <ul className="space-y-3">
-                    {savedScenarios.map((scenario) => (
-                      <li
-                        key={scenario.id}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
-                      >
-                        <div>
-                          <p className="text-sm font-medium text-slate-900">{scenario.title}</p>
-                          <p className="text-xs text-slate-500">
-                            Saved {formatScenarioDate(scenario.createdAt)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => handleLoadScenario(scenario)}
-                          >
-                            Load
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDeleteScenario(scenario.id)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="mt-3 text-sm text-slate-600">
+                    {liveErrorMessage || "Complete valid inputs to see a full breakdown."}
+                  </p>
                 )}
-              </CardContent>
-            </Card>
-          </div>
+              </section>
+            </CardContent>
+          </Card>
+
+          <section className="rounded-xl border border-slate-200 bg-slate-50 p-4 lg:col-start-1">
+            <h3 className="text-sm font-semibold text-slate-900">
+              What this includes / excludes
+            </h3>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Includes
+                </p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                  <li>Service duration</li>
+                  <li>Salary-based estimate</li>
+                  <li>Unpaid leave adjustment</li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Excludes
+                </p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                  <li>Legal edge cases</li>
+                  <li>Disputes</li>
+                  <li>Allowances and government fees</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <details className="rounded-xl border border-slate-200 border-l-2 border-l-[var(--g-blue)] bg-[var(--tint-blue)] lg:col-start-1">
+            <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">
+              Assumptions &amp; Notes
+            </summary>
+            <div className="space-y-3 px-4 pb-4 text-sm text-slate-700">
+              <ul className="space-y-2">
+                {estimate.assumptionsUsed.map((assumption) => (
+                  <li key={assumption} className="leading-6">
+                    {assumption}
+                  </li>
+                ))}
+              </ul>
+
+              {form.notes.trim() ? (
+                <>
+                  <Divider />
+                  <p className="text-slate-700">
+                    <span className="font-medium">User note:</span> {form.notes}
+                  </p>
+                </>
+              ) : null}
+            </div>
+          </details>
+
+          <section className="rounded-xl border border-slate-200 bg-slate-50 p-4 lg:col-start-1">
+            <h3 className="text-sm font-semibold text-slate-900">After you get the estimate</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Print the summary, copy a share link, or save a scenario once the required
+              fields are complete.
+            </p>
+            <p className="mt-3 text-xs text-slate-500">
+              PDF export uses your browser print dialog and does not store files on the server.
+            </p>
+            {postPrintUpsellVisible ? (
+              <p className="mt-2 text-xs text-slate-600">
+                Printed successfully. Want unlimited prints &amp; saved scenarios?{" "}
+                <a
+                  href="/pro"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-slate-800 underline underline-offset-2"
+                >
+                  Join Pro waitlist
+                </a>
+                .
+              </p>
+            ) : null}
+
+            <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+              <h4 className="text-sm font-semibold text-slate-900">MaidShield Pro</h4>
+              <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                <li>Unlimited prints</li>
+                <li>Save scenarios</li>
+                <li>Employer checklist (coming soon)</li>
+              </ul>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="mt-4"
+                onClick={handleJoinWaitlistClick}
+              >
+                Join waitlist for Pro
+              </Button>
+              {printLimitMessage ? (
+                <p className="mt-3 text-sm text-slate-700">{printLimitMessage}</p>
+              ) : null}
+            </div>
+          </section>
+
+          <Card className="lg:col-start-2">
+            <CardContent className="space-y-4">
+              <h3 className="text-base font-semibold text-slate-900">Saved scenarios</h3>
+              {savedScenarios.length === 0 ? (
+                <p className="text-sm text-slate-600">
+                  No saved scenarios yet. Save one from the summary panel.
+                </p>
+              ) : (
+                <ul className="space-y-3">
+                  {savedScenarios.map((scenario) => (
+                    <li
+                      key={scenario.id}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">{scenario.title}</p>
+                        <p className="text-xs text-slate-500">
+                          Saved {formatScenarioDate(scenario.createdAt)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleLoadScenario(scenario)}
+                        >
+                          Load
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteScenario(scenario.id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
         </section>
       </Container>
     </main>
