@@ -132,6 +132,7 @@ export function FeedbackForm() {
         type="email"
         autoComplete="email"
         value={email}
+        aria-label="Email (optional)"
         onChange={(event) => {
           setEmail(event.target.value);
           if (state !== "idle") {
@@ -151,6 +152,7 @@ export function FeedbackForm() {
         <textarea
           id="feedback-message"
           rows={4}
+          aria-label="Message"
           required
           value={message}
           onChange={(event) => {

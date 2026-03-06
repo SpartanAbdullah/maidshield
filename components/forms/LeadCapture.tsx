@@ -122,6 +122,7 @@ export function LeadCapture({
             autoComplete="email"
             required
             value={email}
+            aria-label="Email"
             onChange={(event) => {
               setEmail(event.target.value);
               if (state !== "idle") {
@@ -136,6 +137,7 @@ export function LeadCapture({
             type="text"
             autoComplete="name"
             value={name}
+            aria-label="Name"
             onChange={(event) => setName(event.target.value)}
           />
           <input
