@@ -48,7 +48,7 @@ export default function ProWaitlistPage() {
             <form action="https://app.maidshield.com/calculator"><Button type="submit" variant="secondary">Use calculator now</Button></form>
           </div>
           <p className="mt-2 text-sm text-slate-600">We only send product updates related to early access and rollout windows.</p>
-          <LeadCapture source="pro_waitlist" className="mt-6 max-w-2xl" />
+          <LeadCapture source="pro_waitlist" intent="pro_features" className="mt-6 max-w-2xl" />
         </section>
       </Container>
     </main>

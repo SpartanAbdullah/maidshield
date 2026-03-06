@@ -13,6 +13,7 @@ import { Divider } from "@/components/ui/Divider";
 import { Icon } from "@/components/ui/Icon";
 import { Input } from "@/components/ui/Input";
 import { track } from "@/lib/analytics";
+import { useFeatureFlag } from "@/lib/featureFlags";
 import {
   deleteScenario,
   loadScenarios,
@@ -238,6 +239,10 @@ export default function Calculator() {
   const [shareLinkMessage, setShareLinkMessage] = useState("");
   const [postPrintUpsellVisible, setPostPrintUpsellVisible] = useState(false);
   const [hasSubmittedCalculation, setHasSubmittedCalculation] = useState(false);
+  const exportSpreadsheetEnabled = useFeatureFlag("exportSpreadsheet");
+  const comparisonPlaceholderEnabled = useFeatureFlag("scenarioComparisonPlaceholder");
+  const newUxFlowExperimentEnabled = useFeatureFlag("newUxFlowExperiment");
+  const proTipTimingExperimentEnabled = useFeatureFlag("proTipTimingExperiment");
   const [touched, setTouched] = useState<TouchedState>({
     startDate: false,
     endDate: false,
@@ -246,7 +251,7 @@ export default function Calculator() {
   });
 
   useEffect(() => {
-    track("calculator_view");
+    track("calc_started", { source: "calculator_page_view" });
   }, []);
 
   const errors = useMemo<FormErrors>(() => {
@@ -352,6 +357,12 @@ export default function Calculator() {
       basicMonthlySalary: true,
       unpaidLeaveDays: true,
     });
+
+    if (!hasBlockingErrors) {
+      track("calc_submitted", {
+        has_unpaid_leave: Boolean(form.unpaidLeaveDays.trim()),
+      });
+    }
   }
 
   function handleTryExampleClick() {
@@ -408,7 +419,7 @@ export default function Calculator() {
     }
 
     setPrintLimitMessage("");
-    track("print_click");
+    track("result_printed", { channel: "print_summary" });
     const printWindow = window.open(printHref, "_blank", "noopener,noreferrer");
     if (printWindow) {
       setPostPrintUpsellVisible(true);
@@ -416,7 +427,36 @@ export default function Calculator() {
     }
   }
 
+
+
+
+  function handleExportCsv() {
+    if (hasBlockingErrors) return;
+
+    const rows = [
+      ["metric", "value"],
+      ["service_days", String(estimate.serviceDays)],
+      ["daily_rate", estimate.dailyRate.toFixed(2)],
+      ["gross_gratuity", estimate.gratuityBeforeLeaveAdjustment.toFixed(2)],
+      ["leave_adjustment", estimate.leaveAdjustmentAmount.toFixed(2)],
+      ["net_gratuity", estimate.finalGratuity.toFixed(2)],
+    ];
+
+    const csv = rows.map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `maidshield-estimate-${getTodayKey()}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+    track("result_downloaded", { format: "csv" });
+  }
+
   function handleJoinWaitlistClick() {
+    track("waitlist_signup", { source: "calculator_pro_panel" });
     window.location.assign("/pro");
   }
 
@@ -463,6 +503,16 @@ export default function Calculator() {
           Privacy note: calculations run in your browser. MaidShield does not store your
           inputs.
         </p>
+        {newUxFlowExperimentEnabled ? (
+          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
+            Experiment: streamlined flow hint enabled. Share feedback if this reduces time-to-result.
+          </p>
+        ) : null}
+        {proTipTimingExperimentEnabled && hasSubmittedCalculation && !hasBlockingErrors ? (
+          <p className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+            Pro tip: save this scenario before printing so you can compare revisions later.
+          </p>
+        ) : null}
         <p className="sr-only" aria-live="polite" role="status">
           {liveErrorMessage}
         </p>
@@ -576,6 +626,21 @@ export default function Calculator() {
                       <Icon name="file" className="h-4 w-4" />
                       Print summary
                     </Button>
+                    {exportSpreadsheetEnabled ? (
+                      <Button
+                        variant="secondary"
+                        disabled={hasBlockingErrors}
+                        onClick={handleExportCsv}
+                        title={
+                          hasBlockingErrors
+                            ? "Complete required fields to export"
+                            : "Download estimate summary as CSV"
+                        }
+                      >
+                        <Icon name="file" className="h-4 w-4" />
+                        Export CSV
+                      </Button>
+                    ) : null}
                     <Button
                       variant="secondary"
                       disabled={hasBlockingErrors}
@@ -600,6 +665,13 @@ export default function Calculator() {
                 ) : null}
 
                 <Divider className="my-5" />
+
+                {comparisonPlaceholderEnabled ? (
+                  <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3">
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Planned feature</p>
+                    <p className="mt-1 text-sm text-slate-700">Scenario comparison mode will let you view two saved calculations side-by-side.</p>
+                  </div>
+                ) : null}
 
                 <Input
                   label="Scenario title (optional)"

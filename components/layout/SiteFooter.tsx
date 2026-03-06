@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { MARKETING_BASE_URL } from "@/app/seo";
 import { Container } from "@/components/layout/Container";
+import { getLocaleDictionary } from "@/lib/i18n/locales";
 
 const footerLinks = [
   { href: `${MARKETING_BASE_URL}/pricing`, label: "Pricing" },
@@ -14,11 +15,13 @@ const footerLinks = [
 ];
 
 export function SiteFooter() {
+  const strings = getLocaleDictionary("en");
+
   return (
     <footer className="border-t border-slate-200 bg-white print:hidden">
       <Container className="py-8 text-sm text-slate-600">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p>MaidShield helps UAE household employers plan domestic worker settlements.</p>
+          <p>{strings.footerTagline}</p>
           <nav className="flex flex-wrap gap-4">
             {footerLinks.map((link) => (
               <Link
