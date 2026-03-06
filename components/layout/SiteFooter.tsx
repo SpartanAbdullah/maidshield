@@ -7,6 +7,8 @@ const footerLinks = [
   { href: `${MARKETING_BASE_URL}/pricing`, label: "Pricing" },
   { href: `${MARKETING_BASE_URL}/checklist`, label: "Checklist" },
   { href: `${MARKETING_BASE_URL}/sources`, label: "Sources & assumptions" },
+  { href: `${MARKETING_BASE_URL}/faq`, label: "FAQ" },
+  { href: `${MARKETING_BASE_URL}/settlement-planning-guide`, label: "Planning guide" },
   { href: `${MARKETING_BASE_URL}/privacy`, label: "Privacy" },
   { href: `${MARKETING_BASE_URL}/terms`, label: "Terms" },
 ];

@@ -456,8 +456,8 @@ export default function Calculator() {
     <main className="py-12 sm:py-16">
       <Container>
         <PageHeader
-          title="EOS / Gratuity Calculator"
-          subtitle="Use this estimate tool for planning scenarios. Final legal and payroll outcomes should be reviewed separately."
+          title="Domestic Worker Gratuity Calculator"
+          subtitle="Use this estimate for planning. Review final settlement figures against your records before payment."
         />
         <p className="mt-3 border-l-2 border-slate-200 pl-3 text-xs text-slate-500">
           Privacy note: calculations run in your browser. MaidShield does not store your
@@ -560,7 +560,7 @@ export default function Calculator() {
             <Card>
               <CardContent>
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="text-base font-semibold text-slate-900">Live Summary</h2>
+                  <h2 className="text-base font-semibold text-slate-900">Estimate summary</h2>
 
                   <div className="flex flex-wrap gap-2">
                     <Button
@@ -574,7 +574,7 @@ export default function Calculator() {
                       }
                     >
                       <Icon name="file" className="h-4 w-4" />
-                      Download/Print PDF
+                      Print summary
                     </Button>
                     <Button
                       variant="secondary"
@@ -613,7 +613,7 @@ export default function Calculator() {
                   {missingRequiredInputs ? (
                     <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
                       <p className="text-sm text-slate-700">
-                        Enter start date, end date, and basic salary to see estimate.
+                        Enter start date, end date, and basic salary to generate estimate.
                       </p>
                       <ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
                         <li>Use basic salary</li>
@@ -797,6 +797,20 @@ export default function Calculator() {
                 <p className="mt-3 text-xs text-slate-500">
                   PDF export uses your browser print dialog and does not store files on the server.
                 </p>
+
+                <section className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <h3 className="text-sm font-semibold text-slate-900">After you get the estimate</h3>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
+                    <li>Review all inputs before relying on the result.</li>
+                    <li>Compare with your salary and leave records.</li>
+                    <li>Use the checklist before final settlement.</li>
+                  </ul>
+                  <p className="mt-2 text-xs text-slate-600">
+                    <Link href="/checklist" className="font-medium underline underline-offset-2">End-of-service checklist</Link> ·{' '}
+                    <Link href="/faq" className="font-medium underline underline-offset-2">Help & FAQ</Link> ·{' '}
+                    <Link href="/sources" className="font-medium underline underline-offset-2">Sources & assumptions</Link>
+                  </p>
+                </section>
                 {postPrintUpsellVisible ? (
                   <p className="mt-2 text-xs text-slate-600">
                     Printed successfully. Want unlimited prints &amp; saved scenarios?{" "}
@@ -817,7 +831,7 @@ export default function Calculator() {
                   <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
                     <li>Unlimited prints</li>
                     <li>Save scenarios</li>
-                    <li>Employer checklist (coming soon)</li>
+                    <li>Scenario comparison and cleaner exports (planned)</li>
                   </ul>
                   <Button
                     variant="secondary"

@@ -192,12 +192,7 @@ export default function SourcesPage() {
               </Link>
             </div>
             <p className="text-sm text-slate-600">
-              <Link
-                href="/pro"
-                className="font-medium text-slate-700 underline underline-offset-2"
-              >
-                Join Pro waitlist
-              </Link>
+              <Link href="/faq" className="font-medium text-slate-700 underline underline-offset-2">Help & FAQ</Link> · <Link href="/gratuity-mistakes" className="font-medium text-slate-700 underline underline-offset-2">Common mistakes</Link> · <Link href="/pro" className="font-medium text-slate-700 underline underline-offset-2">Join Pro waitlist</Link>
             </p>
           </CardContent>
         </Card>
