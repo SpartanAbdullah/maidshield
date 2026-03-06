@@ -433,13 +433,15 @@ export default function Calculator() {
   function handleExportCsv() {
     if (hasBlockingErrors) return;
 
+    const dailyRate = estimate.inputsUsed.basicMonthlySalary / 30;
+
     const rows = [
       ["metric", "value"],
-      ["service_days", String(estimate.serviceDays)],
-      ["daily_rate", estimate.dailyRate.toFixed(2)],
-      ["gross_gratuity", estimate.gratuityBeforeLeaveAdjustment.toFixed(2)],
-      ["leave_adjustment", estimate.leaveAdjustmentAmount.toFixed(2)],
-      ["net_gratuity", estimate.finalGratuity.toFixed(2)],
+      ["service_days_total", String(estimate.serviceDuration.totalDays)],
+      ["service_days_adjusted", String(estimate.adjustedServiceDays)],
+      ["unpaid_leave_days", String(estimate.inputsUsed.unpaidLeaveDays)],
+      ["daily_rate", dailyRate.toFixed(2)],
+      ["gratuity_amount", estimate.gratuityAmount.toFixed(2)],
     ];
 
     const csv = rows.map((row) => row.join(",")).join("\n");
