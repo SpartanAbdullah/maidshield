@@ -82,6 +82,17 @@ const organizationJsonLd = {
   logo: `${MARKETING_BASE_URL}/icons/icon-512.png`,
 };
 
+
+const webApplicationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "MaidShield Calculator",
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Web",
+  url: `${APP_BASE_URL}/calculator`,
+  description: pageDescription,
+};
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -161,6 +172,7 @@ export default function Home() {
     <main className="min-h-screen bg-slate-50 py-16 sm:py-24">
       <JsonLd data={websiteJsonLd} />
       <JsonLd data={organizationJsonLd} />
+      <JsonLd data={webApplicationJsonLd} />
       <JsonLd data={faqJsonLd} />
 
       <Container className="space-y-16 sm:space-y-20">

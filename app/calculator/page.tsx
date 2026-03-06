@@ -144,6 +144,32 @@ function formatInputDate(value: string) {
   });
 }
 
+
+function getSingleParam(params: URLSearchParams, key: string) {
+  const value = params.get(key);
+  return value ? value.trim() : "";
+}
+
+function getInitialFormState() {
+  if (typeof window === "undefined") {
+    return initialFormState;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const startDate = getSingleParam(params, "startDate");
+  const endDate = getSingleParam(params, "endDate");
+  const basicMonthlySalary = getSingleParam(params, "basicMonthlySalary");
+  const unpaidLeaveDays = getSingleParam(params, "unpaidLeaveDays");
+
+  return {
+    ...initialFormState,
+    startDate,
+    endDate,
+    basicMonthlySalary,
+    unpaidLeaveDays,
+  };
+}
+
 function buildPrintUrl(form: FormState): string {
   const params = new URLSearchParams();
 
@@ -205,7 +231,7 @@ async function copyToClipboard(value: string): Promise<boolean> {
 }
 
 export default function Calculator() {
-  const [form, setForm] = useState<FormState>(initialFormState);
+  const [form, setForm] = useState<FormState>(() => getInitialFormState());
   const [printLimitMessage, setPrintLimitMessage] = useState("");
   const [scenarioTitle, setScenarioTitle] = useState("");
   const [savedScenarios, setSavedScenarios] = useState<Scenario[]>(() => loadScenarios());
@@ -777,7 +803,7 @@ export default function Calculator() {
                     <a
                       href="/pro"
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="font-medium text-slate-800 underline underline-offset-2"
                     >
                       Join Pro waitlist

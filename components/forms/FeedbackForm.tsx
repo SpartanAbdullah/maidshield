@@ -13,8 +13,8 @@ function validateEmail(email: string) {
     return "";
   }
 
-  if (!email.includes("@")) {
-    return "Email must include @.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Enter a valid email address.";
   }
 
   if (email.length > 120) {
@@ -154,6 +154,7 @@ export function FeedbackForm() {
           rows={4}
           aria-label="Message"
           required
+          aria-describedby={messageError ? "feedback-message-error" : undefined}
           value={message}
           onChange={(event) => {
             setMessage(event.target.value);
@@ -170,7 +171,7 @@ export function FeedbackForm() {
           placeholder="Describe what looked off or what you expected to see."
         />
         {messageError ? (
-          <p className="text-xs text-rose-600">{messageError}</p>
+          <p id="feedback-message-error" className="text-xs text-rose-600">{messageError}</p>
         ) : null}
       </div>
       <input
