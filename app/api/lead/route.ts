@@ -7,6 +7,7 @@ import {
   isReasonablePathSegment,
   normalizeString,
 } from "@/lib/server/validation";
+import { registerWaitlistEntry, type WaitlistIntent } from "@/lib/server/waitlist";
 
 type LeadInput = {
   email?: unknown;
@@ -14,6 +15,7 @@ type LeadInput = {
   page?: unknown;
   source?: unknown;
   honey?: unknown;
+  intent?: unknown;
 };
 
 function getRequestIp(request: NextRequest) {
@@ -23,6 +25,13 @@ function getRequestIp(request: NextRequest) {
   }
 
   return request.headers.get("x-real-ip") ?? "";
+}
+
+function normalizeIntent(value: string): WaitlistIntent {
+  if (value === "pro_features" || value === "product_updates") {
+    return value;
+  }
+  return "unknown";
 }
 
 export async function POST(request: NextRequest) {
@@ -49,6 +58,7 @@ export async function POST(request: NextRequest) {
   const page = normalizeString(payload.page);
   const source = normalizeString(payload.source);
   const honey = normalizeString(payload.honey);
+  const intent = normalizeIntent(normalizeString(payload.intent));
 
   const requestIp = getRequestIp(request);
   const rateLimitResult = consumeRateLimit({
@@ -115,45 +125,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const webhookUrl = process.env.LEADS_WEBHOOK_URL;
-
-  if (!webhookUrl) {
-    return NextResponse.json(
-      { ok: false, error: "Lead capture is not configured." },
-      { status: 500 },
-    );
-  }
-
   try {
-    const timestamp = new Date().toISOString();
-    const pageValue = page || source || "landing";
-
-    const webhookResponse = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        timestamp,
-        email,
-        name,
-        page: pageValue,
-        userAgent: request.headers.get("user-agent") ?? "",
-      }),
-      cache: "no-store",
+    const registration = await registerWaitlistEntry({
+      email,
+      name,
+      page: page || source || "landing",
+      source: source || page || "landing",
+      intent,
+      userAgent: request.headers.get("user-agent") ?? "",
     });
 
-    if (!webhookResponse.ok) {
-      return NextResponse.json(
-        { ok: false, error: "Failed to forward lead." },
-        { status: 502 },
-      );
-    }
-
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      duplicate: registration.duplicate,
+      totalEntries: registration.totalEntries,
+    });
   } catch {
     return NextResponse.json(
-      { ok: false, error: "Failed to forward lead." },
+      { ok: false, error: "Failed to register waitlist entry." },
       { status: 500 },
     );
   }

@@ -1,4 +1,7 @@
 import Link from "next/link";
+
+import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { TrackedFaqItem } from "@/components/analytics/TrackedFaqItem";
 import type { Metadata } from "next";
 
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -56,8 +59,8 @@ export default function Home() {
               <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">A calm, printable estimate tool for household employers preparing end-of-service settlement.</p>
               <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">No account required. No document uploads. Transparent assumptions shown with every estimate.</p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Link href={`${APP_BASE_URL}/calculator`} className={buttonClassName("primary", "md", "h-12 px-7 text-base font-semibold shadow-sm")}>Start free estimate</Link>
-                <Link href="/checklist" className={buttonClassName("secondary")}>Use final settlement checklist</Link>
+                <TrackedLink href={`${APP_BASE_URL}/calculator`} eventName="homepage_cta_clicked" label="hero_start_free_estimate" className={buttonClassName("primary", "md", "h-12 px-7 text-base font-semibold shadow-sm")}>Start free estimate</TrackedLink>
+                <TrackedLink href="/checklist" eventName="homepage_cta_clicked" label="hero_open_checklist" className={buttonClassName("secondary")}>Use final settlement checklist</TrackedLink>
               </div>
               <p className="mt-3 text-xs text-slate-500">Planning tool only. Final settlement remains your responsibility.</p>
             </div>
@@ -106,7 +109,7 @@ export default function Home() {
             <div className="mt-6 rounded-xl border border-slate-200 bg-white px-6 py-2">
               {faqItems.map((item, index) => (
                 <div key={item.question}>
-                  <details className="py-4"><summary className="cursor-pointer text-sm font-medium text-slate-900">{item.question}</summary><p className="mt-3 text-sm leading-6 text-slate-600">{item.answer}</p></details>
+                  <TrackedFaqItem question={item.question} answer={item.answer} />
                   {index < faqItems.length - 1 ? <Divider /> : null}
                 </div>
               ))}
