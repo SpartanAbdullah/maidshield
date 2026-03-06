@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/calculator/print"],
+        disallow: ["/api/", "/calculator/print", "/health"],
       },
     ],
     sitemap: "https://www.maidshield.com/sitemap.xml",

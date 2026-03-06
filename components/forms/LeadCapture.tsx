@@ -19,8 +19,8 @@ function validateEmail(email: string) {
     return "Email is required.";
   }
 
-  if (!email.includes("@")) {
-    return "Email must include @.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Enter a valid email address.";
   }
 
   if (email.length > 120) {
@@ -154,7 +154,7 @@ export function LeadCapture({
             <Button type="submit" disabled={state === "loading"}>
               {submitLabel}
             </Button>
-            <p className="text-xs text-slate-500">Status: {state}</p>
+            <p className="text-xs text-slate-500" aria-live="polite">Status: {state}</p>
           </div>
         </form>
         {state === "success" ? (

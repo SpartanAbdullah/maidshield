@@ -16,6 +16,15 @@ const securityHeaders = [
   // Safer referrer behavior
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
 
+  // Isolate browsing context where possible
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+
+  // Reduce passive cross-origin resource leakage
+  { key: "Cross-Origin-Resource-Policy", value: "same-site" },
+
+  // Disable DNS prefetch for tighter privacy defaults
+  { key: "X-DNS-Prefetch-Control", value: "off" },
+
   // Limit browser features you don’t need (tweak later if you add something)
   {
     key: "Permissions-Policy",
