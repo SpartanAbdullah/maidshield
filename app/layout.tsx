@@ -5,6 +5,7 @@ import Script from "next/script";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PWARegister } from "@/components/layout/PWARegister";
 import { TopNav } from "@/components/layout/TopNav";
+import { AnalyticsObserver } from "@/components/analytics/AnalyticsObserver";
 import { buildOpenGraph, buildTwitter, defaultDescription, makeCanonical } from "@/app/seo";
 import "./globals.css";
 
@@ -28,6 +29,10 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   alternates: {
     canonical: makeCanonical("/", "www"),
+    languages: {
+      "en-AE": "https://www.maidshield.com",
+      "ar-AE": "https://www.maidshield.com/ar",
+    },
   },
   openGraph: buildOpenGraph({
     description: defaultDescription,
@@ -66,6 +71,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} bg-slate-50 text-slate-900 antialiased`}>
         <PWARegister />
         <TopNav />
+        <AnalyticsObserver />
         {children}
         <SiteFooter />
         {shouldLoadPlausible ? (
