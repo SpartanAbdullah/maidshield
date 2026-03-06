@@ -71,7 +71,7 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
           <CardContent className="space-y-6 p-8 print:p-4">
             <header>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-                MaidShield Settlement Summary
+                MaidShield Settlement Estimate Summary
               </h1>
               <p className="mt-1 text-sm text-slate-600">
                 Date generated: {generatedAt}
@@ -134,7 +134,7 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
                 service days: {estimate.adjustedServiceDays}
               </p>
               <p className="text-xl font-semibold tracking-tight text-slate-900">
-                Estimated Gratuity: AED {estimate.gratuityAmount.toFixed(2)}
+                Estimated gratuity: AED {estimate.gratuityAmount.toFixed(2)}
               </p>
             </section>
 
@@ -202,10 +202,24 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
 
             <Divider />
 
+
+            <section className="space-y-2">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">Before final settlement</h2>
+              <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">
+                <li>Recheck dates, salary, and unpaid leave inputs.</li>
+                <li>Compare this estimate with your records and receipts.</li>
+                <li>Use the end-of-service checklist before payment.</li>
+              </ul>
+              <p className="text-xs text-slate-500">
+                <Link href={`${MARKETING_BASE_URL}/checklist`} className="font-medium text-slate-600 underline underline-offset-2">Checklist</Link> ·{' '}
+                <Link href={`${MARKETING_BASE_URL}/faq`} className="font-medium text-slate-600 underline underline-offset-2">Help & FAQ</Link>
+              </p>
+            </section>
+
+            <Divider />
             <section className="text-xs leading-6 text-slate-500">
               <p>
-                Disclaimer: This summary is an estimate for planning only and is
-                not legal, tax, payroll, or accounting advice.
+                Disclaimer: This summary is an estimate for planning only and is not legal, tax, payroll, or accounting advice.
               </p>
               <p>
                 No professional advisory relationship is created by using this

@@ -19,6 +19,11 @@ const navLinks = [
     label: "Pricing",
   },
   {
+    href: `${MARKETING_BASE_URL}/faq`,
+    matchPath: "/faq",
+    label: "FAQ",
+  },
+  {
     href: `${MARKETING_BASE_URL}/about`,
     matchPath: "/about",
     label: "About",
