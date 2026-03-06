@@ -268,34 +268,47 @@ export default function Home() {
             id="trust-heading"
             className="text-2xl font-semibold tracking-tight text-slate-900"
           >
-            Why trust MaidShield?
+            Why Household Employers Trust MaidShield
           </h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-3">
-            <Card>
-              <CardContent className="space-y-2">
-                <h3 className="text-base font-semibold text-slate-900">Privacy</h3>
-                <p className="text-sm leading-6 text-slate-600">
-                  No accounts required and no documents uploaded for core estimate
-                  workflows.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="space-y-2">
-                <h3 className="text-base font-semibold text-slate-900">Transparency</h3>
-                <p className="text-sm leading-6 text-slate-600">
-                  Every estimate shows calculation breakdown lines and assumptions.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="space-y-2">
-                <h3 className="text-base font-semibold text-slate-900">Speed</h3>
-                <p className="text-sm leading-6 text-slate-600">
-                  Instant estimate updates with a printable summary for handover.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4">
+              <div className="flex items-center gap-2">
+                <ShieldIcon className="h-5 w-5 text-slate-700" />
+                <h3 className="text-sm font-semibold text-slate-900">No login required</h3>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Start an estimate instantly without creating an account.
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4">
+              <div className="flex items-center gap-2">
+                <ClipboardCheckIcon className="h-5 w-5 text-slate-700" />
+                <h3 className="text-sm font-semibold text-slate-900">No document uploads</h3>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Keep the process simple without sharing files or paperwork.
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4">
+              <div className="flex items-center gap-2">
+                <UsersIcon className="h-5 w-5 text-slate-700" />
+                <h3 className="text-sm font-semibold text-slate-900">Runs in your browser</h3>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Calculations happen locally for faster, private planning.
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4">
+              <div className="flex items-center gap-2">
+                <ClipboardCheckIcon className="h-5 w-5 text-slate-700" />
+                <h3 className="text-sm font-semibold text-slate-900">
+                  Transparent calculation assumptions
+                </h3>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Review the exact inputs and assumptions behind every estimate.
+              </p>
+            </div>
           </div>
         </section>
 

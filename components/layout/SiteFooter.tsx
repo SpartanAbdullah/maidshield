@@ -14,19 +14,24 @@ const footerLinks = [
 export function SiteFooter() {
   return (
     <footer className="border-t border-slate-200 bg-white print:hidden">
-      <Container className="flex flex-col gap-4 py-8 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-        <p>MaidShield helps UAE household employers plan domestic worker settlements.</p>
-        <nav className="flex flex-wrap gap-4">
-          {footerLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="transition-colors hover:text-slate-900"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+      <Container className="py-8 text-sm text-slate-600">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p>MaidShield helps UAE household employers plan domestic worker settlements.</p>
+          <nav className="flex flex-wrap gap-4">
+            {footerLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition-colors hover:text-slate-900"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+        <p className="mt-5 flex justify-center text-xs text-slate-500">
+          Made with 💖 in 🇦🇪
+        </p>
       </Container>
     </footer>
   );

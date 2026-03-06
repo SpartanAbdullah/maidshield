@@ -29,6 +29,13 @@ type FormErrors = {
   unpaidLeaveDays?: string;
 };
 
+type TouchedState = {
+  startDate: boolean;
+  endDate: boolean;
+  basicMonthlySalary: boolean;
+  unpaidLeaveDays: boolean;
+};
+
 const FREE_DAILY_PRINT_LIMIT = 2;
 const PRINT_USAGE_STORAGE_KEY = "maidshield.print_usage.v1";
 const EXAMPLE_FORM_VALUES: Pick<
@@ -201,13 +208,19 @@ export default function Calculator() {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [printLimitMessage, setPrintLimitMessage] = useState("");
   const [scenarioTitle, setScenarioTitle] = useState("");
-  const [savedScenarios, setSavedScenarios] = useState<Scenario[]>([]);
+  const [savedScenarios, setSavedScenarios] = useState<Scenario[]>(() => loadScenarios());
   const [shareLinkMessage, setShareLinkMessage] = useState("");
   const [postPrintUpsellVisible, setPostPrintUpsellVisible] = useState(false);
+  const [hasSubmittedCalculation, setHasSubmittedCalculation] = useState(false);
+  const [touched, setTouched] = useState<TouchedState>({
+    startDate: false,
+    endDate: false,
+    basicMonthlySalary: false,
+    unpaidLeaveDays: false,
+  });
 
   useEffect(() => {
     track("calculator_view");
-    setSavedScenarios(loadScenarios());
   }, []);
 
   const errors = useMemo<FormErrors>(() => {
@@ -248,24 +261,35 @@ export default function Calculator() {
   const missingRequiredInputs =
     !form.startDate.trim() || !form.endDate.trim() || !form.basicMonthlySalary.trim();
   const canShowEstimate = !hasBlockingErrors;
+  const shouldShowValidation = hasSubmittedCalculation;
+  const displayErrors = useMemo<FormErrors>(
+    () => ({
+      startDate: shouldShowValidation || touched.startDate ? errors.startDate : undefined,
+      endDate: shouldShowValidation || touched.endDate ? errors.endDate : undefined,
+      basicMonthlySalary:
+        shouldShowValidation || touched.basicMonthlySalary
+          ? errors.basicMonthlySalary
+          : undefined,
+      unpaidLeaveDays:
+        shouldShowValidation || touched.unpaidLeaveDays ? errors.unpaidLeaveDays : undefined,
+    }),
+    [errors, shouldShowValidation, touched],
+  );
   const liveErrorMessage = useMemo(() => {
-    if (form.startDate && form.endDate && errors.endDate) {
-      return errors.endDate;
+    if (displayErrors.startDate) {
+      return displayErrors.startDate;
     }
-    if (errors.startDate) {
-      return errors.startDate;
+    if (displayErrors.endDate) {
+      return displayErrors.endDate;
     }
-    if (errors.endDate) {
-      return errors.endDate;
+    if (displayErrors.basicMonthlySalary) {
+      return displayErrors.basicMonthlySalary;
     }
-    if (errors.basicMonthlySalary) {
-      return errors.basicMonthlySalary;
-    }
-    if (errors.unpaidLeaveDays) {
-      return errors.unpaidLeaveDays;
+    if (displayErrors.unpaidLeaveDays) {
+      return displayErrors.unpaidLeaveDays;
     }
     return "";
-  }, [errors, form.startDate, form.endDate]);
+  }, [displayErrors]);
 
   const printHref = buildPrintUrl(form);
 
@@ -290,6 +314,20 @@ export default function Calculator() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function markTouched(key: keyof TouchedState) {
+    setTouched((prev) => ({ ...prev, [key]: true }));
+  }
+
+  function handleCalculateClick() {
+    setHasSubmittedCalculation(true);
+    setTouched({
+      startDate: true,
+      endDate: true,
+      basicMonthlySalary: true,
+      unpaidLeaveDays: true,
+    });
+  }
+
   function handleTryExampleClick() {
     const hasAnyTypedValue = Boolean(
       form.startDate || form.endDate || form.basicMonthlySalary || form.unpaidLeaveDays,
@@ -308,6 +346,13 @@ export default function Calculator() {
     }));
     setPrintLimitMessage("");
     setShareLinkMessage("");
+    setHasSubmittedCalculation(false);
+    setTouched({
+      startDate: false,
+      endDate: false,
+      basicMonthlySalary: false,
+      unpaidLeaveDays: false,
+    });
     track("example_used");
   }
 
@@ -412,6 +457,9 @@ export default function Calculator() {
                 >
                   Try Example
                 </Button>
+                <Button type="button" size="sm" onClick={handleCalculateClick}>
+                  Calculate
+                </Button>
                 <p className="text-xs text-slate-600">
                   Load a realistic sample case to see a meaningful estimate quickly.
                 </p>
@@ -422,7 +470,9 @@ export default function Calculator() {
                 label="Start Date"
                 value={form.startDate}
                 onChange={(event) => updateField("startDate", event.target.value)}
-                error={errors.startDate}
+                onBlur={() => markTouched("startDate")}
+                aria-label="Start Date"
+                error={displayErrors.startDate}
               />
 
               <Input
@@ -430,7 +480,9 @@ export default function Calculator() {
                 label="End Date"
                 value={form.endDate}
                 onChange={(event) => updateField("endDate", event.target.value)}
-                error={errors.endDate}
+                onBlur={() => markTouched("endDate")}
+                aria-label="End Date"
+                error={displayErrors.endDate}
               />
 
               <Input
@@ -440,7 +492,9 @@ export default function Calculator() {
                 label="Basic Monthly Salary"
                 value={form.basicMonthlySalary}
                 onChange={(event) => updateField("basicMonthlySalary", event.target.value)}
-                error={errors.basicMonthlySalary}
+                onBlur={() => markTouched("basicMonthlySalary")}
+                aria-label="Basic Monthly Salary"
+                error={displayErrors.basicMonthlySalary}
                 hint="Enter base monthly wage used for gratuity estimation."
               />
 
@@ -451,7 +505,9 @@ export default function Calculator() {
                 label="Unpaid Leave Days (Optional)"
                 value={form.unpaidLeaveDays}
                 onChange={(event) => updateField("unpaidLeaveDays", event.target.value)}
-                error={errors.unpaidLeaveDays}
+                onBlur={() => markTouched("unpaidLeaveDays")}
+                aria-label="Unpaid Leave Days"
+                error={displayErrors.unpaidLeaveDays}
               />
 
               <div className="space-y-1.5">
@@ -466,6 +522,7 @@ export default function Calculator() {
                   rows={3}
                   value={form.notes}
                   onChange={(event) => updateField("notes", event.target.value)}
+                  aria-label="Notes"
                   placeholder="Add internal context for this estimate..."
                   className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-white"
                 />

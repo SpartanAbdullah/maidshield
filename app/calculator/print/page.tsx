@@ -78,7 +78,7 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
               </p>
               <p className="mt-2 text-xs text-slate-500 print:hidden">
                 Print / Save as PDF: use your browser print dialog (`Ctrl/Cmd + P`)
-                and choose "Save as PDF".
+                and choose &quot;Save as PDF&quot;.
               </p>
             </header>
 

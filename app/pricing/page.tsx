@@ -13,7 +13,7 @@ import { APP_BASE_URL, buildOpenGraph, buildTwitter, makeCanonical } from "@/app
 
 const pageTitle = "Pricing";
 const pageDescription =
-  "Compare MaidShield Free and Pro options for UAE household employers who need clear settlement estimates and stronger records.";
+  "Compare MaidShield Free and upcoming Pro features for UAE household employers who want clearer settlement planning and records.";
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -48,12 +48,22 @@ const proFeatures = [
     colorVariant: "success" as const,
   },
   {
-    label: "Export-ready printable records",
+    label: "Settlement breakdown export",
     icon: "file",
     colorVariant: "info" as const,
   },
   {
-    label: "Priority updates and improvements",
+    label: "Saved calculations",
+    icon: "check",
+    colorVariant: "success" as const,
+  },
+  {
+    label: "Advisor-friendly print format",
+    icon: "file",
+    colorVariant: "info" as const,
+  },
+  {
+    label: "Scenario comparison",
     icon: "lightning",
     colorVariant: "info" as const,
   },
@@ -74,6 +84,20 @@ const faqs = [
   },
 ];
 
+
+const pricingFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
+
 const pricingJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -92,6 +116,7 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-12 sm:py-16">
       <JsonLd data={pricingJsonLd} />
+      <JsonLd data={pricingFaqJsonLd} />
 
       <Container className="space-y-8">
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-12">
@@ -151,8 +176,8 @@ export default function PricingPage() {
               </div>
               <div className="space-y-2">
                 <p className="text-sm leading-6 text-slate-700">
-                  For households and advisors who need stronger records and
-                  repeatable workflows.
+                  For households and advisors who need clearer records and repeatable
+                  settlement planning workflows.
                 </p>
               </div>
               <Divider />
@@ -168,8 +193,11 @@ export default function PricingPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/pro" className={buttonClassName()}>
-                Join Pro waitlist
+              <Link
+                href="/pro"
+                className={buttonClassName("primary", "md", "shadow-sm focus-visible:ring-2")}
+              >
+                Join waitlist
               </Link>
             </CardContent>
           </Card>
