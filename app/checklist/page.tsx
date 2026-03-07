@@ -10,8 +10,7 @@ import { Divider } from "@/components/ui/Divider";
 import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 
 const pageTitle = "End-of-Service Checklist";
-const pageDescription =
-  "Use this UAE domestic worker end-of-service checklist to prepare documents, verify payments, and close out settlements cleanly.";
+const pageDescription = "Enhanced domestic worker end-of-service checklist for UAE household employers preparing final settlement.";
 
 type ChecklistSection = {
   title: string;
@@ -169,22 +168,12 @@ export default function ChecklistPage() {
     <main className="min-h-screen bg-slate-50 py-16 sm:py-24">
       <Container className="space-y-12 sm:space-y-14">
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-12">
-          <PageHeader title="End of Service Checklist (UAE Domestic Workers)" />
-          <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-600">
-            This checklist helps households and operations teams prepare a
-            structured closeout process for domestic worker end-of-service
-            cases. It is a practical planning guide only and does not
-            constitute legal advice.
-          </p>
+          <PageHeader title="Domestic Worker End-of-Service Checklist" />
+          <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-600">Use this as a practical planning checklist before final settlement. It is informational guidance and not legal advice.</p>
         </section>
 
-        <section aria-labelledby="checklist-sections-heading">
-          <h2
-            id="checklist-sections-heading"
-            className="text-2xl font-semibold tracking-tight text-slate-900"
-          >
-            Checklist Sections
-          </h2>
+        <section>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Checklist sections</h2>
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
             {checklistSections.map((section) => (
               <Card key={section.title}>
@@ -205,28 +194,23 @@ export default function ChecklistPage() {
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-8 sm:px-10 sm:py-10">
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Estimate Before You Finalize
-          </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Use MaidShield to run a quick EOS estimate and review inputs before
-            your final settlement discussion.
-          </p>
-          <form action="https://app.maidshield.com/calculator" className="mt-5">
-            <Button type="submit">Use the calculator</Button>
-          </form>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Run estimate before final payment</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Use the calculator for a draft gratuity amount, then verify with your records before final settlement.</p>
+          <form action="https://app.maidshield.com/calculator" className="mt-5"><Button type="submit">Use the calculator</Button></form>
         </section>
 
-        <section aria-labelledby="checklist-updates-heading">
-          <h2
-            id="checklist-updates-heading"
-            className="text-2xl font-semibold tracking-tight text-slate-900"
-          >
-            Get updates
-          </h2>
-          <p className="mt-2 text-sm text-slate-600">
-            No spam. Unsubscribe anytime.
-          </p>
+        <Card>
+          <CardContent className="space-y-2 text-sm text-slate-700">
+            <h2 className="text-base font-semibold text-slate-900">Related planning pages</h2>
+            <p><Link href="/final-settlement-review" className="font-medium underline underline-offset-2">What to review before final settlement</Link></p>
+            <p><Link href="/settlement-planning-guide" className="font-medium underline underline-offset-2">Printable settlement planning guide</Link></p>
+            <p><Link href="/sources" className="font-medium underline underline-offset-2">Sources & assumptions</Link></p>
+          </CardContent>
+        </Card>
+
+        <section>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Get updates</h2>
+          <p className="mt-2 text-sm text-slate-600">No spam. Unsubscribe anytime.</p>
           <LeadCapture source="checklist-page" className="mt-6 max-w-2xl" />
         </section>
       </Container>

@@ -6,6 +6,10 @@ import { usePathname } from "next/navigation";
 import { APP_BASE_URL, MARKETING_BASE_URL } from "@/app/seo";
 import { Container } from "@/components/layout/Container";
 import { buttonClassName } from "@/components/ui/Button";
+import { LanguageSelectorPlaceholder } from "@/components/i18n/LanguageSelectorPlaceholder";
+import { track } from "@/lib/analytics";
+import { useFeatureFlag } from "@/lib/featureFlags";
+import { getLocaleDictionary } from "@/lib/i18n/locales";
 
 const navLinks = [
   {
@@ -19,6 +23,11 @@ const navLinks = [
     label: "Pricing",
   },
   {
+    href: `${MARKETING_BASE_URL}/faq`,
+    matchPath: "/faq",
+    label: "FAQ",
+  },
+  {
     href: `${MARKETING_BASE_URL}/about`,
     matchPath: "/about",
     label: "About",
@@ -27,10 +36,12 @@ const navLinks = [
 
 export function TopNav() {
   const pathname = usePathname();
+  const useAltCta = useFeatureFlag("alternateCtaText");
+  const strings = getLocaleDictionary("en");
 
   return (
     <header className="border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
-      <Container className="flex h-16 items-center justify-between">
+      <Container className="flex h-16 items-center justify-between gap-4">
         <Link
           href={MARKETING_BASE_URL}
           className="text-lg font-semibold tracking-tight text-slate-900"
@@ -57,11 +68,15 @@ export function TopNav() {
               </Link>
             );
           })}
+          <LanguageSelectorPlaceholder />
           <Link
             href={`${APP_BASE_URL}/calculator`}
             className={buttonClassName("primary", "md", "h-9 px-3.5")}
+            onClick={() => {
+              track("calc_started", { source: "top_nav" });
+            }}
           >
-            Start
+            {useAltCta ? strings.topNavStartAltLabel : strings.topNavStartLabel}
           </Link>
         </nav>
       </Container>

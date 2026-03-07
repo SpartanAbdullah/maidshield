@@ -9,6 +9,11 @@ const marketingPaths = [
   "/checklist",
   "/pro",
   "/sources",
+  "/faq",
+  "/how-gratuity-estimates-work",
+  "/final-settlement-review",
+  "/gratuity-mistakes",
+  "/settlement-planning-guide",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

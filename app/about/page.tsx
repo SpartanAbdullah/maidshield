@@ -5,9 +5,9 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent } from "@/components/ui/Card";
 import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 
-const pageTitle = "About";
+const pageTitle = "About MaidShield";
 const pageDescription =
-  "Learn how MaidShield helps UAE household employers review domestic worker settlement estimates with clearer assumptions.";
+  "Why MaidShield exists, who it serves, and how it keeps settlement planning clear for UAE household employers.";
 
 const aboutCards = [
   {
@@ -60,7 +60,7 @@ export default function AboutPage() {
       <Container>
         <PageHeader
           title="About MaidShield"
-          subtitle="MaidShield helps households and advisors estimate domestic worker settlement outcomes with transparent assumptions."
+          subtitle="A practical planning tool for UAE household employers handling domestic worker settlement calculations."
         />
 
         <Card className="mt-8">

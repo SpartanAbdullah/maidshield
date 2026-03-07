@@ -12,6 +12,7 @@ type LeadCaptureState = "idle" | "loading" | "success" | "error";
 type LeadCaptureProps = {
   source?: string;
   className?: string;
+  intent?: "pro_features" | "product_updates";
 };
 
 function validateEmail(email: string) {
@@ -19,8 +20,8 @@ function validateEmail(email: string) {
     return "Email is required.";
   }
 
-  if (!email.includes("@")) {
-    return "Email must include @.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Enter a valid email address.";
   }
 
   if (email.length > 120) {
@@ -33,6 +34,7 @@ function validateEmail(email: string) {
 export function LeadCapture({
   source = "landing",
   className,
+  intent = "product_updates",
 }: LeadCaptureProps) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -84,18 +86,29 @@ export function LeadCapture({
           email: trimmedEmail,
           name: trimmedName,
           page,
+          source,
+          intent,
           honey,
         }),
       });
 
       const data = (await response.json().catch(() => null)) as
-        | { ok?: boolean; error?: string }
+        | { ok?: boolean; error?: string; duplicate?: boolean }
         | null;
 
       if (response.ok && data?.ok) {
-        track("lead_submit_success", { source });
+        if (data.duplicate) {
+          track("waitlist_duplicate_submission", { source });
+        } else {
+          track("waitlist_signup", { source });
+        }
+
         setState("success");
-        setMessage("Thanks \u2014 we\u2019ll email you when new features ship.");
+        setMessage(
+          data.duplicate
+            ? "You are already on the waitlist. We will email future updates."
+            : "Thanks — you’re on the waitlist. Watch your inbox for feature updates.",
+        );
         setEmail("");
         setName("");
         setHoney("");
@@ -122,6 +135,7 @@ export function LeadCapture({
             autoComplete="email"
             required
             value={email}
+            aria-label="Email"
             onChange={(event) => {
               setEmail(event.target.value);
               if (state !== "idle") {
@@ -136,6 +150,7 @@ export function LeadCapture({
             type="text"
             autoComplete="name"
             value={name}
+            aria-label="Name"
             onChange={(event) => setName(event.target.value)}
           />
           <input
@@ -152,13 +167,18 @@ export function LeadCapture({
             <Button type="submit" disabled={state === "loading"}>
               {submitLabel}
             </Button>
-            <p className="text-xs text-slate-500">Status: {state}</p>
+            <p className="text-xs text-slate-500" aria-live="polite">Status: {state}</p>
           </div>
         </form>
         {state === "success" ? (
-          <p className="text-sm text-emerald-700" aria-live="polite">
-            {message}
-          </p>
+          <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3">
+            <p className="text-sm text-emerald-700" aria-live="polite">
+              {message}
+            </p>
+            <p className="mt-1 text-xs text-emerald-800">
+              Confirmation: your request has been received and queued for product updates.
+            </p>
+          </div>
         ) : null}
         {state === "error" && !emailError ? (
           <p className="text-sm text-rose-600" aria-live="polite">

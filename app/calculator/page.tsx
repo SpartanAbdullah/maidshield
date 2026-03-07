@@ -13,6 +13,7 @@ import { Divider } from "@/components/ui/Divider";
 import { Icon } from "@/components/ui/Icon";
 import { Input } from "@/components/ui/Input";
 import { track } from "@/lib/analytics";
+import { useFeatureFlag } from "@/lib/featureFlags";
 import {
   deleteScenario,
   loadScenarios,
@@ -27,6 +28,13 @@ type FormErrors = {
   endDate?: string;
   basicMonthlySalary?: string;
   unpaidLeaveDays?: string;
+};
+
+type TouchedState = {
+  startDate: boolean;
+  endDate: boolean;
+  basicMonthlySalary: boolean;
+  unpaidLeaveDays: boolean;
 };
 
 const FREE_DAILY_PRINT_LIMIT = 2;
@@ -137,6 +145,32 @@ function formatInputDate(value: string) {
   });
 }
 
+
+function getSingleParam(params: URLSearchParams, key: string) {
+  const value = params.get(key);
+  return value ? value.trim() : "";
+}
+
+function getInitialFormState() {
+  if (typeof window === "undefined") {
+    return initialFormState;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const startDate = getSingleParam(params, "startDate");
+  const endDate = getSingleParam(params, "endDate");
+  const basicMonthlySalary = getSingleParam(params, "basicMonthlySalary");
+  const unpaidLeaveDays = getSingleParam(params, "unpaidLeaveDays");
+
+  return {
+    ...initialFormState,
+    startDate,
+    endDate,
+    basicMonthlySalary,
+    unpaidLeaveDays,
+  };
+}
+
 function buildPrintUrl(form: FormState): string {
   const params = new URLSearchParams();
 
@@ -198,16 +232,26 @@ async function copyToClipboard(value: string): Promise<boolean> {
 }
 
 export default function Calculator() {
-  const [form, setForm] = useState<FormState>(initialFormState);
+  const [form, setForm] = useState<FormState>(() => getInitialFormState());
   const [printLimitMessage, setPrintLimitMessage] = useState("");
   const [scenarioTitle, setScenarioTitle] = useState("");
-  const [savedScenarios, setSavedScenarios] = useState<Scenario[]>([]);
+  const [savedScenarios, setSavedScenarios] = useState<Scenario[]>(() => loadScenarios());
   const [shareLinkMessage, setShareLinkMessage] = useState("");
   const [postPrintUpsellVisible, setPostPrintUpsellVisible] = useState(false);
+  const [hasSubmittedCalculation, setHasSubmittedCalculation] = useState(false);
+  const exportSpreadsheetEnabled = useFeatureFlag("exportSpreadsheet");
+  const comparisonPlaceholderEnabled = useFeatureFlag("scenarioComparisonPlaceholder");
+  const newUxFlowExperimentEnabled = useFeatureFlag("newUxFlowExperiment");
+  const proTipTimingExperimentEnabled = useFeatureFlag("proTipTimingExperiment");
+  const [touched, setTouched] = useState<TouchedState>({
+    startDate: false,
+    endDate: false,
+    basicMonthlySalary: false,
+    unpaidLeaveDays: false,
+  });
 
   useEffect(() => {
-    track("calculator_view");
-    setSavedScenarios(loadScenarios());
+    track("calc_started", { source: "calculator_page_view" });
   }, []);
 
   const errors = useMemo<FormErrors>(() => {
@@ -248,24 +292,35 @@ export default function Calculator() {
   const missingRequiredInputs =
     !form.startDate.trim() || !form.endDate.trim() || !form.basicMonthlySalary.trim();
   const canShowEstimate = !hasBlockingErrors;
+  const shouldShowValidation = hasSubmittedCalculation;
+  const displayErrors = useMemo<FormErrors>(
+    () => ({
+      startDate: shouldShowValidation || touched.startDate ? errors.startDate : undefined,
+      endDate: shouldShowValidation || touched.endDate ? errors.endDate : undefined,
+      basicMonthlySalary:
+        shouldShowValidation || touched.basicMonthlySalary
+          ? errors.basicMonthlySalary
+          : undefined,
+      unpaidLeaveDays:
+        shouldShowValidation || touched.unpaidLeaveDays ? errors.unpaidLeaveDays : undefined,
+    }),
+    [errors, shouldShowValidation, touched],
+  );
   const liveErrorMessage = useMemo(() => {
-    if (form.startDate && form.endDate && errors.endDate) {
-      return errors.endDate;
+    if (displayErrors.startDate) {
+      return displayErrors.startDate;
     }
-    if (errors.startDate) {
-      return errors.startDate;
+    if (displayErrors.endDate) {
+      return displayErrors.endDate;
     }
-    if (errors.endDate) {
-      return errors.endDate;
+    if (displayErrors.basicMonthlySalary) {
+      return displayErrors.basicMonthlySalary;
     }
-    if (errors.basicMonthlySalary) {
-      return errors.basicMonthlySalary;
-    }
-    if (errors.unpaidLeaveDays) {
-      return errors.unpaidLeaveDays;
+    if (displayErrors.unpaidLeaveDays) {
+      return displayErrors.unpaidLeaveDays;
     }
     return "";
-  }, [errors, form.startDate, form.endDate]);
+  }, [displayErrors]);
 
   const printHref = buildPrintUrl(form);
 
@@ -323,6 +378,13 @@ export default function Calculator() {
     }));
     setPrintLimitMessage("");
     setShareLinkMessage("");
+    setHasSubmittedCalculation(false);
+    setTouched({
+      startDate: false,
+      endDate: false,
+      basicMonthlySalary: false,
+      unpaidLeaveDays: false,
+    });
     track("example_used");
   }
 
@@ -352,7 +414,7 @@ export default function Calculator() {
     }
 
     setPrintLimitMessage("");
-    track("print_click");
+    track("result_printed", { channel: "print_summary" });
     const printWindow = window.open(printHref, "_blank", "noopener,noreferrer");
     if (printWindow) {
       setPostPrintUpsellVisible(true);
@@ -360,7 +422,38 @@ export default function Calculator() {
     }
   }
 
+
+
+
+  function handleExportCsv() {
+    if (hasBlockingErrors) return;
+
+    const dailyRate = estimate.inputsUsed.basicMonthlySalary / 30;
+
+    const rows = [
+      ["metric", "value"],
+      ["service_days_total", String(estimate.serviceDuration.totalDays)],
+      ["service_days_adjusted", String(estimate.adjustedServiceDays)],
+      ["unpaid_leave_days", String(estimate.inputsUsed.unpaidLeaveDays)],
+      ["daily_rate", dailyRate.toFixed(2)],
+      ["gratuity_amount", estimate.gratuityAmount.toFixed(2)],
+    ];
+
+    const csv = rows.map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `maidshield-estimate-${getTodayKey()}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+    track("result_downloaded", { format: "csv" });
+  }
+
   function handleJoinWaitlistClick() {
+    track("waitlist_signup", { source: "calculator_pro_panel" });
     window.location.assign("/pro");
   }
 
@@ -400,13 +493,23 @@ export default function Calculator() {
     <main className="py-12 sm:py-16">
       <Container>
         <PageHeader
-          title="EOS / Gratuity Calculator"
-          subtitle="Use this estimate tool for planning scenarios. Final legal and payroll outcomes should be reviewed separately."
+          title="Domestic Worker Gratuity Calculator"
+          subtitle="Use this estimate for planning. Review final settlement figures against your records before payment."
         />
         <p className="mt-3 border-l-2 border-slate-200 pl-3 text-xs text-slate-500">
           Privacy note: calculations run in your browser. MaidShield does not store your
           inputs.
         </p>
+        {newUxFlowExperimentEnabled ? (
+          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
+            Experiment: streamlined flow hint enabled. Share feedback if this reduces time-to-result.
+          </p>
+        ) : null}
+        {proTipTimingExperimentEnabled && hasSubmittedCalculation && !hasBlockingErrors ? (
+          <p className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+            Pro tip: save this scenario before printing so you can compare revisions later.
+          </p>
+        ) : null}
         <p className="sr-only" aria-live="polite" role="status">
           {liveErrorMessage}
         </p>
@@ -426,6 +529,9 @@ export default function Calculator() {
                   onClick={handleTryExampleClick}
                 >
                   Try Example
+                </Button>
+                <Button type="button" size="sm" onClick={handleCalculateClick}>
+                  Calculate
                 </Button>
                 <p className="text-xs text-slate-600">
                   Load a realistic sample case to see a meaningful estimate quickly.
@@ -457,7 +563,9 @@ export default function Calculator() {
                 label="Basic Monthly Salary"
                 value={form.basicMonthlySalary}
                 onChange={(event) => updateField("basicMonthlySalary", event.target.value)}
-                error={errors.basicMonthlySalary}
+                onBlur={() => markTouched("basicMonthlySalary")}
+                aria-label="Basic Monthly Salary"
+                error={displayErrors.basicMonthlySalary}
                 hint="Enter base monthly wage used for gratuity estimation."
                 className={getFilledFieldClass(
                   form.basicMonthlySalary,
@@ -488,6 +596,7 @@ export default function Calculator() {
                   rows={3}
                   value={form.notes}
                   onChange={(event) => updateField("notes", event.target.value)}
+                  aria-label="Notes"
                   placeholder="Add internal context for this estimate..."
                   className={notesFieldClassName}
                 />
