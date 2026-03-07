@@ -354,6 +354,26 @@ export default function Calculator() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function markTouched(key: keyof TouchedState) {
+    setTouched((prev) => ({ ...prev, [key]: true }));
+  }
+
+  function handleCalculateClick() {
+    setHasSubmittedCalculation(true);
+    setTouched({
+      startDate: true,
+      endDate: true,
+      basicMonthlySalary: true,
+      unpaidLeaveDays: true,
+    });
+
+    if (!hasBlockingErrors) {
+      track("calc_submitted", {
+        has_unpaid_leave: Boolean(form.unpaidLeaveDays.trim()),
+      });
+    }
+  }
+
   function getFilledFieldClass(value: string, error?: string) {
     return value.trim() && !error
       ? "calculator-field calculator-field--filled"
@@ -543,7 +563,8 @@ export default function Calculator() {
                 label="Start Date"
                 value={form.startDate}
                 onChange={(event) => updateField("startDate", event.target.value)}
-                error={errors.startDate}
+                onBlur={() => markTouched("startDate")}
+                error={displayErrors.startDate}
                 className={getFilledFieldClass(form.startDate, errors.startDate)}
               />
 
@@ -552,7 +573,8 @@ export default function Calculator() {
                 label="End Date"
                 value={form.endDate}
                 onChange={(event) => updateField("endDate", event.target.value)}
-                error={errors.endDate}
+                onBlur={() => markTouched("endDate")}
+                error={displayErrors.endDate}
                 className={getFilledFieldClass(form.endDate, errors.endDate)}
               />
 
@@ -580,7 +602,8 @@ export default function Calculator() {
                 label="Unpaid Leave Days (Optional)"
                 value={form.unpaidLeaveDays}
                 onChange={(event) => updateField("unpaidLeaveDays", event.target.value)}
-                error={errors.unpaidLeaveDays}
+                onBlur={() => markTouched("unpaidLeaveDays")}
+                error={displayErrors.unpaidLeaveDays}
                 className={getFilledFieldClass(form.unpaidLeaveDays, errors.unpaidLeaveDays)}
               />
 
