@@ -9,6 +9,33 @@ const pageTitle = "About MaidShield";
 const pageDescription =
   "Why MaidShield exists, who it serves, and how it keeps settlement planning clear for UAE household employers.";
 
+const aboutCards = [
+  {
+    title: "Why MaidShield Exists",
+    className: "border-sky-200 bg-sky-50",
+    body:
+      "Settlement reviews are often rushed and opaque. MaidShield exists to make service dates, salary inputs, assumptions, and planning steps easier to review before final payment.",
+  },
+  {
+    title: "Who It's For",
+    className: "border-emerald-200 bg-emerald-50",
+    body:
+      "It is built for household employers, family office operators, PROs, and advisors who want a cleaner way to sense-check domestic worker closeout figures.",
+  },
+  {
+    title: "What It Is NOT",
+    className: "border-rose-200 bg-rose-50",
+    body:
+      "MaidShield is not legal advice, payroll outsourcing, or dispute resolution. Final settlement decisions still need to be confirmed against your records and case details.",
+  },
+  {
+    title: "Transparency Promise",
+    className: "border-amber-200 bg-amber-50",
+    body:
+      "Every estimate is meant to show the inputs used, service duration, assumptions, and limits clearly so you can see what is included before relying on the number.",
+  },
+] as const;
+
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
@@ -36,51 +63,35 @@ export default function AboutPage() {
           subtitle="A practical planning tool for UAE household employers handling domestic worker settlement calculations."
         />
 
-        <div className="mt-8 space-y-5">
-          <Card>
-            <CardContent className="space-y-3">
-              <h2 className="text-lg font-semibold text-slate-900">Why MaidShield Exists</h2>
-              <p className="text-sm leading-6 text-slate-700">
-                Household employers often need a structured estimate before final settlement. MaidShield
-                exists to make that planning step clearer by showing inputs, assumptions, and a readable
-                breakdown in one place.
-              </p>
-            </CardContent>
-          </Card>
+        <Card className="mt-8">
+          <CardContent className="space-y-4">
+            <p className="text-sm leading-6 text-slate-700">
+              The product focuses on planning clarity: gather key employment
+              inputs, apply configurable rules, and present clean summaries for
+              review.
+            </p>
+            <p className="text-sm leading-6 text-slate-700">
+              This MVP is intentionally lightweight and does not provide legal
+              advice or final payroll processing.
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardContent className="space-y-3">
-              <h2 className="text-lg font-semibold text-slate-900">Who It&apos;s For</h2>
-              <p className="text-sm leading-6 text-slate-700">
-                MaidShield is for UAE household employers, family offices, and advisors who want a calm,
-                consistent way to review domestic worker end-of-service scenarios before final approval.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="space-y-3">
-              <h2 className="text-lg font-semibold text-slate-900">What It Is NOT</h2>
-              <p className="text-sm leading-6 text-slate-700">
-                MaidShield is not a law firm, not a payroll processor, and not a substitute for formal legal
-                advice. It is a planning and review aid to support clearer conversations and better records.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="space-y-3">
-              <h2 className="text-lg font-semibold text-slate-900">Transparency Promise</h2>
-              <p className="text-sm leading-6 text-slate-700">
-                We keep assumptions visible, use plain language, and avoid hidden logic where possible so
-                users can understand how each estimate is produced.
-              </p>
-              <p className="text-xs leading-6 text-slate-500">
-                MaidShield provides planning estimates and does not replace formal legal advice.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <section aria-labelledby="about-highlights-heading" className="mt-8">
+          <h2 id="about-highlights-heading" className="sr-only">
+            About highlights
+          </h2>
+          <div className="grid gap-5 md:grid-cols-2">
+            {aboutCards.map((card) => (
+              <Card key={card.title} className={card.className}>
+                <CardContent className="space-y-3">
+                  <h2 className="text-base font-semibold text-slate-900">{card.title}</h2>
+                  <p className="text-sm leading-6 text-slate-700">{card.body}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
       </Container>
     </main>
   );

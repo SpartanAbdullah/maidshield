@@ -33,9 +33,10 @@ export function Select({
     .filter(Boolean)
     .join(" ");
   const selectClasses = [
-    "block h-10 w-full appearance-none rounded-lg border bg-white px-3 pr-10 text-sm text-slate-900",
+    "block h-10 w-full appearance-none rounded-xl border bg-white px-3 pr-10 text-sm text-slate-900",
+    "transition-[background-color,border-color,box-shadow] duration-200 ease-out",
     "focus:outline-none focus:ring-2 focus:ring-slate-300",
-    error ? "border-rose-400 focus:ring-rose-200" : "border-slate-300",
+    error ? "border-rose-400 focus:ring-rose-200" : "border-slate-300 hover:border-slate-400",
     className,
   ]
     .filter(Boolean)
@@ -92,4 +93,3 @@ export function Select({
     </div>
   );
 }
-

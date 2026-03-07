@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
 import { LeadCapture } from "@/components/forms/LeadCapture";
 import { Container } from "@/components/layout/Container";
@@ -12,21 +13,156 @@ import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 const pageTitle = "End-of-Service Checklist";
 const pageDescription = "Enhanced domestic worker end-of-service checklist for UAE household employers preparing final settlement.";
 
+type ChecklistSection = {
+  title: string;
+  items: ReactNode[];
+};
+
+const checklistSections: ChecklistSection[] = [
+  {
+    title: "1) Before the final month (documents & verification)",
+    items: [
+      <>
+        <strong>Service period:</strong> Confirm employment start date, contract terms,
+        and any amendments in one file.
+      </>,
+      <>
+        <strong>Documentation:</strong> Collect passport copy, Emirates ID copy, visa
+        details, and labor-related records.
+      </>,
+      <>
+        <strong>Leave records:</strong> Check attendance logs and written leave approvals
+        to avoid last-minute disputes.
+      </>,
+      <>
+        <strong>Salary records:</strong> Align household records with payroll history
+        before final calculations begin.
+      </>,
+    ],
+  },
+  {
+    title: "2) Salary & leave reconciliation",
+    items: [
+      <>
+        <strong>Salary records:</strong> Reconcile monthly salary paid versus contractual
+        basic salary.
+      </>,
+      <>
+        <strong>Final payment:</strong> Calculate pending salary days up to the final
+        working date.
+      </>,
+      <>
+        <strong>Leave records:</strong> Review annual leave balance and agree on leave
+        encashment approach.
+      </>,
+      <>
+        <strong>Signature:</strong> Document any agreed deductions with signed
+        acknowledgement where required.
+      </>,
+    ],
+  },
+  {
+    title: "3) Gratuity / EOS settlement preparation (what inputs matter)",
+    items: [
+      <>
+        <strong>Service period:</strong> Confirm it using exact start and end dates.
+      </>,
+      <>
+        <strong>Salary records:</strong> Use the correct basic salary value for gratuity
+        assumptions.
+      </>,
+      <>
+        <strong>Leave records:</strong> Account for unpaid leave periods where policy or
+        law affects service calculation.
+      </>,
+      <>
+        <strong>Settlement confirmation:</strong> Prepare a line-item estimate so both
+        sides can review the same numbers.
+      </>,
+    ],
+  },
+  {
+    title: "4) Visa / cancellation / PRO coordination (high level)",
+    items: [
+      <>
+        <strong>Visa cancellation:</strong> Coordinate the cancellation timeline with your
+        PRO and relevant portals.
+      </>,
+      <>
+        <strong>Documentation:</strong> Confirm medical, ID, and residency status actions
+        needed for closure.
+      </>,
+      <>
+        <strong>Government fees:</strong> Track each fee and who is responsible for the
+        payment.
+      </>,
+      <>
+        <strong>Clearance:</strong> Keep a dated checklist of each cancellation step and
+        completion proof.
+      </>,
+    ],
+  },
+  {
+    title: "5) Final day handover (keys, accommodation, receipts)",
+    items: [
+      <>
+        <strong>Clearance:</strong> Collect keys, access cards, and household items
+        against a signed list.
+      </>,
+      <>
+        <strong>Documentation:</strong> Settle accommodation and utility arrangements
+        where applicable.
+      </>,
+      <>
+        <strong>Final payment:</strong> Issue a final payment receipt with clear amount
+        breakdown.
+      </>,
+      <>
+        <strong>Signature:</strong> Capture signatures from both parties on final handover
+        confirmation.
+      </>,
+    ],
+  },
+  {
+    title: "6) After completion (retain receipts, bank transfer proof)",
+    items: [
+      <>
+        <strong>Settlement confirmation:</strong> Archive bank transfer confirmations,
+        signed receipts, and settlement summary.
+      </>,
+      <>
+        <strong>Visa cancellation:</strong> Retain cancellation evidence and any official
+        transaction references.
+      </>,
+      <>
+        <strong>Documentation:</strong> Store records in a single folder for audit and
+        future reference.
+      </>,
+      <>
+        <strong>Clearance review:</strong> Set an internal reminder to improve the process
+        for the next case.
+      </>,
+    ],
+  },
+];
+
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: makeCanonical("/checklist", "www") },
-  openGraph: buildOpenGraph({ title: pageTitle, description: pageDescription, path: "/checklist", base: "www" }),
-  twitter: buildTwitter({ title: pageTitle, description: pageDescription }),
+  alternates: {
+    canonical: makeCanonical("/checklist", "www"),
+  },
+  openGraph: buildOpenGraph({
+    title: pageTitle,
+    description: pageDescription,
+    path: "/checklist",
+    base: "www",
+  }),
+  twitter: buildTwitter({
+    title: pageTitle,
+    description: pageDescription,
+  }),
 };
-
-const checklistSections = [
-  { title: "1) Collect core records", items: ["Employment contract and any written amendments.", "Start date, final working date, and cancellation timeline.", "Basic salary records and proof of monthly payments.", "Leave records, approvals, and unpaid leave notes."] },
-  { title: "2) Prepare gratuity estimate inputs", items: ["Confirm exact dates before calculation.", "Use the basic monthly salary used for your case records.", "Enter unpaid leave days only when supported by records.", "Save or print the estimate breakdown for discussion."] },
-  { title: "3) Review final settlement components", items: ["Pending salary days (if any).", "Leave encashment approach and amount.", "Gratuity estimate compared against records.", "Any agreed deductions documented and acknowledged."] },
-  { title: "4) Complete final-day documents", items: ["Final settlement sheet with line items.", "Bank transfer proof or signed receipt.", "Handover checklist (keys, access cards, household items).", "Signatures from both sides where needed."] },
-  { title: "5) Post-closure record keeping", items: ["Store receipts, transfer proof, and settlement sheet together.", "Keep cancellation references and final status records.", "Archive documents in one folder for future review.", "Record any process issue to improve next closeout."] },
-];
 
 export default function ChecklistPage() {
   return (
@@ -41,7 +177,19 @@ export default function ChecklistPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Checklist sections</h2>
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
             {checklistSections.map((section) => (
-              <Card key={section.title}><CardContent><h3 className="text-base font-semibold text-slate-900">{section.title}</h3><Divider className="my-4" /><ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-600">{section.items.map((item) => <li key={item}>{item}</li>)}</ul></CardContent></Card>
+              <Card key={section.title}>
+                <CardContent>
+                  <h3 className="text-base font-semibold text-slate-900">
+                    {section.title}
+                  </h3>
+                  <Divider className="my-4" />
+                  <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-600">
+                    {section.items.map((item, index) => (
+                      <li key={`${section.title}-${index}`}>{item}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </section>

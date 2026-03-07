@@ -19,6 +19,9 @@
   --accent-foreground: #ffffff;
   --border: #E2E8F0;
   --muted: #475569;
+  --field-filled-bg: rgba(52, 168, 83, 0.10);
+  --field-filled-border: rgba(52, 168, 83, 0.34);
+  --field-filled-border-hover: rgba(52, 168, 83, 0.46);
 }
 
 @theme inline {
@@ -55,4 +58,21 @@ a {
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
+}
+
+.calculator-field {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.calculator-field--filled {
+  background-color: var(--field-filled-bg);
+  border-color: var(--field-filled-border);
+}
+
+.calculator-field--filled:hover,
+.calculator-field--filled:focus {
+  border-color: var(--field-filled-border-hover);
 }

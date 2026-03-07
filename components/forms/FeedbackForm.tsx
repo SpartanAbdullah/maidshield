@@ -108,7 +108,7 @@ export function FeedbackForm() {
       if (response.ok && data?.ok) {
         track("feedback_submit_success");
         setState("success");
-        setFormMessage("Thanks — feedback received.");
+        setFormMessage("Thanks, feedback received.");
         setEmail("");
         setMessage("");
         setCompany("");
@@ -163,10 +163,10 @@ export function FeedbackForm() {
               setFormMessage("");
             }
           }}
-          className={`block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white ${
+          className={`block w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 transition-[background-color,border-color,box-shadow] duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white ${
             messageError
               ? "border-rose-400 focus:ring-rose-200"
-              : "border-slate-300 focus:ring-slate-300"
+              : "border-slate-300 hover:border-slate-400 focus:ring-slate-300"
           }`}
           placeholder="Describe what looked off or what you expected to see."
         />
