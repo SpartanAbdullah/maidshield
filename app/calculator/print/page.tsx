@@ -1,9 +1,17 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
-import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
+import { BreakdownRow } from "@/components/calculator/BreakdownRow";
 import { Container } from "@/components/layout/Container";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { HelperBlock } from "@/components/ui/HelperBlock";
+import {
+  buildEstimateBreakdownSections,
+  formatCurrency,
+  formatDate,
+  getEstimateStructureNotes,
+} from "@/lib/calculator/presentation";
+import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import { MARKETING_BASE_URL } from "@/app/seo";
 
 export const dynamic = "force-dynamic";
@@ -29,17 +37,6 @@ function parseNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function formatDate(value: string): string {
-  if (!value) return "-";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  });
-}
-
 export default async function CalculatorPrintPage({ searchParams }: PrintPageProps) {
   const params = await searchParams;
   const startDate = readParam(params, "startDate");
@@ -55,6 +52,8 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
     unpaidLeaveDays,
     notes: notes || undefined,
   });
+  const breakdownSections = buildEstimateBreakdownSections(estimate);
+  const estimateStructureNotes = getEstimateStructureNotes(estimate);
 
   const generatedAt = new Date().toLocaleString("en-US", {
     year: "numeric",
@@ -66,112 +65,142 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
 
   return (
     <main className="py-8 print:py-0">
-      <Container className="max-w-4xl print:max-w-none print:px-0">
+      <Container className="max-w-5xl print:max-w-none print:px-0">
         <Card className="print:rounded-none print:border-0 print:shadow-none">
           <CardContent className="space-y-6 p-8 print:p-4">
             <header>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
                 MaidShield Settlement Estimate Summary
               </h1>
-              <p className="mt-1 text-sm text-slate-600">
-                Date generated: {generatedAt}
-              </p>
+              <p className="mt-1 text-sm text-slate-600">Date generated: {generatedAt}</p>
               <p className="mt-2 text-xs text-slate-500 print:hidden">
-                Print / Save as PDF: use your browser print dialog (`Ctrl/Cmd + P`)
-                and choose &quot;Save as PDF&quot;.
+                Print or save as PDF using your browser print dialog (`Ctrl/Cmd + P`).
               </p>
             </header>
+
+            <HelperBlock title="Planning reminder" icon="info" tone="neutral" className="print:hidden">
+              This summary is an estimate based on the inputs provided. Review it against your records before final settlement.
+            </HelperBlock>
 
             <Divider />
 
             <section className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
-                Inputs
+                Inputs used
               </h2>
-              <dl className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
-                <div>
-                  <dt className="text-slate-500">Start Date</dt>
-                  <dd className="text-slate-900">
-                    {formatDate(estimate.inputsUsed.startDate)}
-                  </dd>
+              <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Start date</dt>
+                  <dd className="mt-1 text-slate-900">{formatDate(estimate.inputsUsed.startDate)}</dd>
                 </div>
-                <div>
-                  <dt className="text-slate-500">End Date</dt>
-                  <dd className="text-slate-900">
-                    {formatDate(estimate.inputsUsed.endDate)}
-                  </dd>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">End date</dt>
+                  <dd className="mt-1 text-slate-900">{formatDate(estimate.inputsUsed.endDate)}</dd>
                 </div>
-                <div>
-                  <dt className="text-slate-500">Basic Monthly Salary</dt>
-                  <dd className="text-slate-900">
-                    AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
-                  </dd>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Basic monthly salary</dt>
+                  <dd className="mt-1 text-slate-900">{formatCurrency(estimate.inputsUsed.basicMonthlySalary)}</dd>
                 </div>
-                <div>
-                  <dt className="text-slate-500">Unpaid Leave Days</dt>
-                  <dd className="text-slate-900">{estimate.inputsUsed.unpaidLeaveDays}</dd>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Unpaid leave days</dt>
+                  <dd className="mt-1 text-slate-900">{estimate.inputsUsed.unpaidLeaveDays}</dd>
                 </div>
               </dl>
               {notes ? (
-                <p className="text-sm text-slate-700">
-                  <span className="font-medium">Notes:</span> {notes}
-                </p>
+                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                  <span className="font-semibold text-slate-900">Notes:</span> {notes}
+                </div>
               ) : null}
             </section>
 
             <Divider />
 
-            <section className="space-y-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
-                Results
-              </h2>
-              <p className="text-sm text-slate-800">
-                Service Duration: {estimate.serviceDuration.years}y{" "}
-                {estimate.serviceDuration.months}m {estimate.serviceDuration.days}d
-              </p>
-              <p className="text-xs text-slate-600">
-                Total days: {estimate.serviceDuration.totalDays} | Adjusted
-                service days: {estimate.adjustedServiceDays}
-              </p>
-              <p className="text-xl font-semibold tracking-tight text-slate-900">
-                Estimated gratuity: AED {estimate.gratuityAmount.toFixed(2)}
-              </p>
+            <section className="rounded-[28px] bg-slate-900 px-6 py-6 text-white">
+              <p className="text-sm text-slate-300">Estimated gratuity</p>
+              <p className="mt-2 text-4xl font-semibold tracking-tight">{formatCurrency(estimate.gratuityAmount)}</p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Service duration</p>
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m {estimate.serviceDuration.days}d
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Total service days</p>
+                  <p className="mt-1 text-sm font-semibold text-white">{estimate.serviceDuration.totalDays}</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Eligible service days</p>
+                  <p className="mt-1 text-sm font-semibold text-white">{estimate.adjustedServiceDays}</p>
+                </div>
+              </div>
             </section>
 
-            <section className="space-y-3">
+            <section className="space-y-5">
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+                  Calculation breakdown
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  The rows below explain how the estimate is structured, based on the information supplied in this print view.
+                </p>
+              </div>
+              <div className="space-y-5">
+                {breakdownSections.map((section) => (
+                  <div key={section.title} className="space-y-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900">{section.title}</h3>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">{section.description}</p>
+                    </div>
+                    <div className="grid gap-3">
+                      {section.rows.map((row) => (
+                        <BreakdownRow
+                          key={row.label}
+                          label={row.label}
+                          value={row.value}
+                          helper={row.helper}
+                          tone={row.tone}
+                          emphasis={row.emphasis}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-4">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
-                Calculation Breakdown
+                How to read this estimate
               </h2>
-              <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">
-                {estimate.breakdownLines.map((line) => (
-                  <li key={line}>{line}</li>
+              <ul className="space-y-2 text-sm leading-6 text-slate-700">
+                {estimateStructureNotes.map((note) => (
+                  <li key={note} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    {note}
+                  </li>
                 ))}
               </ul>
             </section>
 
-            <section className="space-y-3">
+            <section className="space-y-4">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
-                What This Includes / Excludes
+                What this includes / excludes
               </h2>
               <div className="grid gap-4 text-sm sm:grid-cols-2">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                    Includes
-                  </p>
-                  <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
-                    <li>Service duration</li>
-                    <li>Salary-based estimate</li>
-                    <li>Unpaid leave adjustment</li>
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Includes</p>
+                  <ul className="mt-3 space-y-2 text-slate-700">
+                    <li>Service duration from the dates entered</li>
+                    <li>Basic-salary-based estimate structure</li>
+                    <li>Unpaid leave adjustment if entered</li>
                   </ul>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                    Excludes
-                  </p>
-                  <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
-                    <li>Legal edge cases</li>
-                    <li>Disputes</li>
-                    <li>Allowances and government fees</li>
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Excludes</p>
+                  <ul className="mt-3 space-y-2 text-slate-700">
+                    <li>Pending salary or leave encashment</li>
+                    <li>Allowances, fees, or reimbursements</li>
+                    <li>Disputes or edge-case legal questions</li>
                   </ul>
                 </div>
               </div>
@@ -179,40 +208,59 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
 
             <section className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
-                Warnings & Assumptions
+                Warnings & assumptions
               </h2>
               {estimate.warnings.length > 0 ? (
                 <ul className="space-y-2 text-sm text-amber-700">
                   {estimate.warnings.map((warning) => (
-                    <li key={warning} className="rounded border border-amber-200 bg-amber-50 px-3 py-2">
+                    <li key={warning} className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
                       {warning}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-slate-600">No warnings.</p>
+                <p className="text-sm text-slate-600">No warnings were generated from the supplied inputs.</p>
               )}
 
-              <ul className="space-y-2 text-sm text-slate-600">
+              <ul className="space-y-2 text-sm text-slate-700">
                 {estimate.assumptionsUsed.map((assumption) => (
-                  <li key={assumption}>{assumption}</li>
+                  <li key={assumption} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    {assumption}
+                  </li>
                 ))}
               </ul>
             </section>
 
             <Divider />
 
-
-            <section className="space-y-2">
+            <section className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">Before final settlement</h2>
               <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">
-                <li>Recheck dates, salary, and unpaid leave inputs.</li>
+                <li>Recheck dates, salary basis, and unpaid leave inputs.</li>
                 <li>Compare this estimate with your records and receipts.</li>
                 <li>Use the end-of-service checklist before payment.</li>
               </ul>
               <p className="text-xs text-slate-500">
-                <Link href={`${MARKETING_BASE_URL}/checklist`} className="font-medium text-slate-600 underline underline-offset-2">Checklist</Link> ·{' '}
-                <Link href={`${MARKETING_BASE_URL}/faq`} className="font-medium text-slate-600 underline underline-offset-2">Help & FAQ</Link>
+                <Link
+                  href={`${MARKETING_BASE_URL}/checklist`}
+                  className="font-medium text-slate-600 underline underline-offset-2"
+                >
+                  Checklist
+                </Link>{" "}
+                |{" "}
+                <Link
+                  href={`${MARKETING_BASE_URL}/faq`}
+                  className="font-medium text-slate-600 underline underline-offset-2"
+                >
+                  Help & FAQ
+                </Link>{" "}
+                |{" "}
+                <Link
+                  href={`${MARKETING_BASE_URL}/sources`}
+                  className="font-medium text-slate-600 underline underline-offset-2"
+                >
+                  Sources &amp; assumptions
+                </Link>
               </p>
             </section>
 
@@ -222,16 +270,7 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
                 Disclaimer: This summary is an estimate for planning only and is not legal, tax, payroll, or accounting advice.
               </p>
               <p>
-                No professional advisory relationship is created by using this
-                tool. Confirm final values with qualified professionals.
-              </p>
-              <p>
-                <Link
-                  href={`${MARKETING_BASE_URL}/sources`}
-                  className="font-medium text-slate-600 underline underline-offset-2"
-                >
-                  Sources &amp; assumptions
-                </Link>
+                No professional advisory relationship is created by using this tool. Confirm final values with qualified professionals where needed.
               </p>
             </section>
           </CardContent>
@@ -240,4 +279,3 @@ export default async function CalculatorPrintPage({ searchParams }: PrintPagePro
     </main>
   );
 }
-

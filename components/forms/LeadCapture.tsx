@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { HelperBlock } from "@/components/ui/HelperBlock";
 import { Input } from "@/components/ui/Input";
 import { track } from "@/lib/analytics";
 
@@ -39,24 +40,27 @@ export function LeadCapture({
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [honey, setHoney] = useState("");
-  const [state, setState] = useState<LeadCaptureState>("idle");
+  const [submitState, setSubmitState] = useState<LeadCaptureState>("idle");
   const [message, setMessage] = useState("");
 
   const emailError = useMemo(() => {
-    if (state !== "error") {
+    if (submitState !== "error") {
       return "";
     }
 
     const validationError = validateEmail(email.trim());
     return validationError || "";
-  }, [email, state]);
+  }, [email, submitState]);
 
+  const defaultSubmitLabel = intent === "pro_features" ? "Join waitlist" : "Get updates";
   const submitLabel =
-    state === "loading"
-      ? "Submitting..."
-      : state === "success"
-        ? "Submitted"
-        : "Submit";
+    submitState === "loading"
+      ? "Sending..."
+      : submitState === "success"
+        ? intent === "pro_features"
+          ? "Joined"
+          : "Subscribed"
+        : defaultSubmitLabel;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -66,12 +70,12 @@ export function LeadCapture({
     const validationError = validateEmail(trimmedEmail);
 
     if (validationError) {
-      setState("error");
+      setSubmitState("error");
       setMessage(validationError);
       return;
     }
 
-    setState("loading");
+    setSubmitState("loading");
     setMessage("");
 
     try {
@@ -103,11 +107,13 @@ export function LeadCapture({
           track("waitlist_signup", { source });
         }
 
-        setState("success");
+        setSubmitState("success");
         setMessage(
           data.duplicate
-            ? "You are already on the waitlist. We will email future updates."
-            : "Thanks — you’re on the waitlist. Watch your inbox for feature updates.",
+            ? "You are already on the list. We will keep this email for future MaidShield updates."
+            : intent === "pro_features"
+              ? "You are on the waitlist. We will email you when early access details are ready."
+              : "Your request has been received. We will only send the updates you asked for.",
         );
         setEmail("");
         setName("");
@@ -115,11 +121,11 @@ export function LeadCapture({
         return;
       }
 
-      setState("error");
-      setMessage(data?.error || "Unable to submit. Please try again.");
+      setSubmitState("error");
+      setMessage(data?.error || "Something went wrong. Please try again.");
     } catch {
-      setState("error");
-      setMessage("Unable to submit. Please try again.");
+      setSubmitState("error");
+      setMessage("Something went wrong. Please try again.");
     }
   }
 
@@ -127,31 +133,47 @@ export function LeadCapture({
 
   return (
     <Card className={cardClasses}>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
+        <HelperBlock icon="mail" tone="neutral">
+          {intent === "pro_features"
+            ? "Share the best email for early-access updates. You can leave your name blank if you prefer."
+            : "Share the best email for product updates. You can leave your name blank if you prefer."}
+        </HelperBlock>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Email"
+            label="Email address"
             type="email"
             autoComplete="email"
             required
+            placeholder="Enter your email address"
+            hint="We only use this address for the updates you request."
             value={email}
-            aria-label="Email"
+            aria-label="Email address"
             onChange={(event) => {
               setEmail(event.target.value);
-              if (state !== "idle") {
-                setState("idle");
+              if (submitState !== "idle") {
+                setSubmitState("idle");
                 setMessage("");
               }
             }}
             error={emailError}
           />
           <Input
-            label="Name"
+            label="Name (optional)"
             type="text"
             autoComplete="name"
+            placeholder="How should we address you?"
+            hint="Helpful if you want a more personal reply later."
             value={name}
             aria-label="Name"
-            onChange={(event) => setName(event.target.value)}
+            onChange={(event) => {
+              setName(event.target.value);
+              if (submitState !== "idle") {
+                setSubmitState("idle");
+                setMessage("");
+              }
+            }}
           />
           <input
             type="text"
@@ -163,27 +185,29 @@ export function LeadCapture({
             value={honey}
             onChange={(event) => setHoney(event.target.value)}
           />
-          <div className="flex items-center gap-3">
-            <Button type="submit" disabled={state === "loading"}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Button type="submit" disabled={submitState === "loading"} className="sm:min-w-[140px]">
               {submitLabel}
             </Button>
-            <p className="text-xs text-slate-500" aria-live="polite">Status: {state}</p>
+            <p className="text-xs leading-5 text-slate-500">
+              No spam. No document uploads. You can unsubscribe later.
+            </p>
           </div>
         </form>
-        {state === "success" ? (
-          <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3">
-            <p className="text-sm text-emerald-700" aria-live="polite">
+
+        {submitState === "success" ? (
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+            <p className="text-sm font-medium text-emerald-800" aria-live="polite">
               {message}
-            </p>
-            <p className="mt-1 text-xs text-emerald-800">
-              Confirmation: your request has been received and queued for product updates.
             </p>
           </div>
         ) : null}
-        {state === "error" && !emailError ? (
-          <p className="text-sm text-rose-600" aria-live="polite">
-            {message}
-          </p>
+        {submitState === "error" && !emailError ? (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3">
+            <p className="text-sm font-medium text-rose-700" aria-live="polite">
+              {message}
+            </p>
+          </div>
         ) : null}
       </CardContent>
     </Card>

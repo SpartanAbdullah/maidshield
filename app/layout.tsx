@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 
@@ -31,7 +31,6 @@ export const metadata: Metadata = {
     canonical: makeCanonical("/", "www"),
     languages: {
       "en-AE": "https://www.maidshield.com",
-      "ar-AE": "https://www.maidshield.com/ar",
     },
   },
   openGraph: buildOpenGraph({

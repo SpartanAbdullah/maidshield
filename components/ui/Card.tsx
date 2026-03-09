@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 
 type CardProps = {
   children: ReactNode;
@@ -7,7 +7,7 @@ type CardProps = {
 
 export function Card({ children, className }: CardProps) {
   const classes = [
-    "rounded-xl border border-slate-200 bg-white shadow-sm",
+    "overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_20px_45px_-32px_rgba(15,23,42,0.35)]",
     className,
   ]
     .filter(Boolean)
@@ -17,7 +17,6 @@ export function Card({ children, className }: CardProps) {
 }
 
 export function CardContent({ children, className }: CardProps) {
-  const classes = ["p-6", className].filter(Boolean).join(" ");
+  const classes = ["p-6 sm:p-7", className].filter(Boolean).join(" ");
   return <div className={classes}>{children}</div>;
 }
-

@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+﻿import type { ButtonHTMLAttributes } from "react";
 import { forwardRef } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
@@ -10,7 +10,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-[background-color,border-color,color,box-shadow] duration-200 ease-out " +
+  "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-[transform,background-color,border-color,color,box-shadow,filter] duration-200 ease-out " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 " +
   "disabled:pointer-events-none disabled:opacity-50";
 
@@ -21,9 +21,9 @@ const sizes: Record<ButtonSize, string> = {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-[var(--accent)] text-white hover:text-white hover:brightness-95 active:text-white active:brightness-90",
+    "bg-[linear-gradient(135deg,var(--accent),color-mix(in_srgb,var(--accent)_82%,#0f172a))] text-white shadow-[0_20px_32px_-22px_rgba(26,115,232,0.7)] hover:-translate-y-px hover:text-white hover:brightness-[1.02] active:translate-y-0 active:text-white active:brightness-95",
   secondary:
-    "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 active:bg-slate-100",
+    "border border-slate-200 bg-white text-slate-800 shadow-[0_14px_24px_-24px_rgba(15,23,42,0.45)] hover:-translate-y-px hover:border-slate-300 hover:bg-slate-50 active:translate-y-0 active:bg-slate-100",
   ghost:
     "bg-transparent text-slate-800 hover:bg-slate-100 active:bg-slate-200",
 };
