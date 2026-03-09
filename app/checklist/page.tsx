@@ -1,5 +1,4 @@
-import Link from "next/link";
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { LeadCapture } from "@/components/forms/LeadCapture";
@@ -8,10 +7,13 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { HelperBlock } from "@/components/ui/HelperBlock";
+import { LinkCard } from "@/components/ui/LinkCard";
 import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 
 const pageTitle = "End-of-Service Checklist";
-const pageDescription = "Enhanced domestic worker end-of-service checklist for UAE household employers preparing final settlement.";
+const pageDescription =
+  "Enhanced domestic worker end-of-service checklist for UAE household employers preparing final settlement.";
 
 type ChecklistSection = {
   title: string;
@@ -168,9 +170,14 @@ export default function ChecklistPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-16 sm:py-24">
       <Container className="space-y-12 sm:space-y-14">
-        <section className="rounded-2xl border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-12">
+        <section className="rounded-[32px] border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-12">
           <PageHeader title="Domestic Worker End-of-Service Checklist" />
-          <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-600">Use this as a practical planning checklist before final settlement. It is informational guidance and not legal advice.</p>
+          <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-600 sm:text-base">
+            Use this as practical preparation before final settlement. It is informational guidance, not legal advice, and works best when you review it alongside your own records.
+          </p>
+          <HelperBlock title="Best used right after your estimate" icon="clipboard" tone="neutral" className="mt-6 max-w-3xl">
+            Once you have a draft figure, move through these sections to confirm dates, salary records, leave balance, cancellation steps, and payment proof.
+          </HelperBlock>
         </section>
 
         <section>
@@ -179,9 +186,7 @@ export default function ChecklistPage() {
             {checklistSections.map((section) => (
               <Card key={section.title}>
                 <CardContent>
-                  <h3 className="text-base font-semibold text-slate-900">
-                    {section.title}
-                  </h3>
+                  <h3 className="text-base font-semibold text-slate-900">{section.title}</h3>
                   <Divider className="my-4" />
                   <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-600">
                     {section.items.map((item, index) => (
@@ -194,25 +199,64 @@ export default function ChecklistPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 bg-white px-6 py-8 sm:px-10 sm:py-10">
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Run estimate before final payment</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Use the calculator for a draft gratuity amount, then verify with your records before final settlement.</p>
-          <form action="https://app.maidshield.com/calculator" className="mt-5"><Button type="submit">Use the calculator</Button></form>
+        <section className="rounded-[32px] border border-slate-200 bg-white px-6 py-8 sm:px-10 sm:py-10">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Run the estimate before final payment</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
+            Use the calculator for a draft gratuity amount, then come back to this checklist so the rest of the settlement process stays organized.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <form action="https://app.maidshield.com/calculator">
+              <Button type="submit" className="h-12 px-6 text-base font-semibold">
+                Use the calculator
+              </Button>
+            </form>
+            <p className="text-sm text-slate-500">Bring your contract dates, salary basis, and unpaid leave records if applicable.</p>
+          </div>
         </section>
 
-        <Card>
-          <CardContent className="space-y-2 text-sm text-slate-700">
-            <h2 className="text-base font-semibold text-slate-900">Related planning pages</h2>
-            <p><Link href="/final-settlement-review" className="font-medium underline underline-offset-2">What to review before final settlement</Link></p>
-            <p><Link href="/settlement-planning-guide" className="font-medium underline underline-offset-2">Printable settlement planning guide</Link></p>
-            <p><Link href="/sources" className="font-medium underline underline-offset-2">Sources & assumptions</Link></p>
-          </CardContent>
-        </Card>
+        <section className="space-y-5">
+          <div className="max-w-3xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Related planning pages</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600 sm:text-base">
+              Move between the planning pages with less guesswork and more obvious navigation.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <LinkCard
+              href="/final-settlement-review"
+              title="Before final settlement"
+              description="Review the core records and documents to confirm before the last payment step."
+              icon="shield"
+              tone="sky"
+              eyebrow="Review"
+            />
+            <LinkCard
+              href="/settlement-planning-guide"
+              title="Settlement planning guide"
+              description="Open a shorter printable planning flow if you want a compact handover checklist."
+              icon="file"
+              tone="amber"
+              eyebrow="Guide"
+            />
+            <LinkCard
+              href="/sources"
+              title="Sources & assumptions"
+              description="Check the estimate boundaries so you know what still needs separate review."
+              icon="info"
+              tone="slate"
+              eyebrow="Transparency"
+            />
+          </div>
+        </section>
 
-        <section>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Get updates</h2>
-          <p className="mt-2 text-sm text-slate-600">No spam. Unsubscribe anytime.</p>
-          <LeadCapture source="checklist-page" className="mt-6 max-w-2xl" />
+        <section className="rounded-[32px] border border-slate-200 bg-white px-6 py-8 sm:px-10 sm:py-10">
+          <div className="max-w-3xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Get updates</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600 sm:text-base">
+              If you want updates on new workflow improvements or planning resources, leave the best email below.
+            </p>
+          </div>
+          <LeadCapture source="checklist-page" className="mt-6 max-w-3xl" />
         </section>
       </Container>
     </main>

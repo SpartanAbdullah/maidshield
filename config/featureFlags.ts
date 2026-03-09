@@ -1,4 +1,4 @@
-export type FeatureFlagKey =
+﻿export type FeatureFlagKey =
   | "alternateCtaText"
   | "newUxFlowExperiment"
   | "proTipTimingExperiment"
@@ -25,7 +25,7 @@ export const featureFlags: Record<FeatureFlagKey, FeatureFlagConfig> = {
     description: "Experiment: show a pro-tip prompt after calculation submission.",
   },
   scenarioComparisonPlaceholder: {
-    enabled: true,
+    enabled: false,
     description: "Placeholder card for future side-by-side scenario comparison mode.",
   },
   exportSpreadsheet: {
@@ -33,7 +33,7 @@ export const featureFlags: Record<FeatureFlagKey, FeatureFlagConfig> = {
     description: "Enable CSV export for estimate summaries.",
   },
   languageSelector: {
-    enabled: true,
+    enabled: false,
     description: "Show non-invasive language selector placeholder.",
   },
 };

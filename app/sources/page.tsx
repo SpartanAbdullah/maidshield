@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+﻿import type { Metadata } from "next";
 
 import { FeedbackForm } from "@/components/forms/FeedbackForm";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
+import { HelperBlock } from "@/components/ui/HelperBlock";
+import { LinkCard } from "@/components/ui/LinkCard";
 import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 
 const pageTitle = "Sources & Assumptions";
@@ -60,142 +60,139 @@ const unsureSteps = [
 export default function SourcesPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-12 sm:py-16">
-      <Container className="max-w-3xl space-y-8">
+      <Container className="max-w-5xl space-y-8">
         <PageHeader
           title="Sources & assumptions"
           subtitle="How MaidShield produces estimates and what to verify before final settlement."
         />
-        <p className="text-xs text-slate-500">Last reviewed: Feb 2026</p>
+        <p className="text-xs text-slate-500">Last reviewed: March 2026</p>
+
+        <HelperBlock title="How to read this page" icon="shield" tone="neutral">
+          Use it to understand the estimate boundaries. If you see something here that does not match your case, pause and verify it before relying on the number.
+        </HelperBlock>
 
         <Card>
           <CardContent className="space-y-6">
             <section className="space-y-3">
-              <h2 className="text-base font-semibold text-slate-900">
-                What MaidShield does
-              </h2>
+              <h2 className="text-base font-semibold text-slate-900">What MaidShield does</h2>
               <p className="text-sm leading-6 text-slate-700">
-                MaidShield gives household employers a structured estimate to
-                help with planning before final settlement.
+                MaidShield gives household employers a structured estimate to help with planning before final settlement.
               </p>
               <p className="text-sm leading-6 text-slate-700">
-                Each estimate shows the service duration, the inputs used, and
-                the breakdown lines behind the result so the numbers can be
-                reviewed before payment.
+                Each estimate shows the service duration, the inputs used, and the breakdown behind the result so the number can be reviewed before payment.
               </p>
             </section>
 
             <Divider />
 
             <section className="space-y-3">
-              <h2 className="text-base font-semibold text-slate-900">
-                What MaidShield does NOT do
-              </h2>
+              <h2 className="text-base font-semibold text-slate-900">What MaidShield does not do</h2>
               <p className="text-sm leading-6 text-slate-700">
-                MaidShield is not a legal advice service and should not be used
-                as the only basis for a final settlement decision.
+                MaidShield is not a legal advice service and should not be used as the only basis for a final settlement decision.
               </p>
               <p className="text-sm leading-6 text-slate-700">
-                It does not resolve edge cases, disputes, allowances,
-                government fees, or special contract clauses that may affect
-                the final amount.
+                It does not resolve edge cases, disputes, allowances, government fees, or special contract clauses that may affect the final amount.
               </p>
             </section>
 
             <Divider />
 
-            <section className="space-y-3">
-              <h2 className="text-base font-semibold text-slate-900">
-                Key assumptions
-              </h2>
-              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
-                {keyAssumptions.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+            <section className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-3">
+                <h2 className="text-base font-semibold text-slate-900">Key assumptions</h2>
+                <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                  {keyAssumptions.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="space-y-3">
+                <h2 className="text-base font-semibold text-slate-900">What to verify before paying</h2>
+                <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                  {verificationSteps.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </section>
 
             <Divider />
 
-            <section className="space-y-3">
-              <h2 className="text-base font-semibold text-slate-900">
-                What to verify before paying
-              </h2>
-              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
-                {verificationSteps.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </section>
-
-            <Divider />
-
-            <section className="space-y-3">
-              <h2 className="text-base font-semibold text-slate-900">
-                Privacy note
-              </h2>
-              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
-                {privacyPoints.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </section>
-
-            <Divider />
-
-            <section className="space-y-3">
-              <h2 className="text-base font-semibold text-slate-900">
-                If you are unsure
-              </h2>
-              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
-                {unsureSteps.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+            <section className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-3">
+                <h2 className="text-base font-semibold text-slate-900">Privacy note</h2>
+                <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                  {privacyPoints.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="space-y-3">
+                <h2 className="text-base font-semibold text-slate-900">If you are unsure</h2>
+                <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                  {unsureSteps.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </section>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="space-y-4">
-            <h2 className="text-base font-semibold text-slate-900">
-              Send feedback
-            </h2>
-            <p className="text-sm leading-6 text-slate-700">
-              If something looks off, tell us - we improve MaidShield based on
-              real UAE household cases.
-            </p>
-            <p className="text-xs text-slate-500">
-              No personal documents needed - describe your scenario generally.
-            </p>
+          <CardContent className="space-y-5">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900">Send feedback</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                If something looks off, tell us. We use real user feedback to make the product clearer and easier to trust.
+              </p>
+            </div>
             <FeedbackForm />
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="space-y-4">
-            <h2 className="text-base font-semibold text-slate-900">
-              Next step
-            </h2>
-            <p className="text-sm leading-6 text-slate-700">
-              Use the calculator for a planning estimate, then confirm the final
-              figures against your records before making payment.
+        <section className="space-y-5">
+          <div className="max-w-3xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Next step</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600 sm:text-base">
+              After reading the estimate boundaries, move into the page that helps you act on them.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="https://app.maidshield.com/calculator"
-                className={buttonClassName()}
-              >
-                Open calculator
-              </Link>
-              <Link href="/checklist" className={buttonClassName("secondary")}>
-                View checklist
-              </Link>
-            </div>
-            <p className="text-sm text-slate-600">
-              <Link href="/faq" className="font-medium text-slate-700 underline underline-offset-2">Help & FAQ</Link> · <Link href="/gratuity-mistakes" className="font-medium text-slate-700 underline underline-offset-2">Common mistakes</Link> · <Link href="/pro" className="font-medium text-slate-700 underline underline-offset-2">Join Pro waitlist</Link>
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <LinkCard
+              href="https://app.maidshield.com/calculator"
+              title="Open calculator"
+              description="Run a planning estimate with a clearer explanation of what shaped the figure."
+              icon="calculator"
+              tone="sky"
+              eyebrow="Estimate"
+            />
+            <LinkCard
+              href="/checklist"
+              title="View checklist"
+              description="Compare the estimate with the rest of the records and closeout tasks before final payment."
+              icon="clipboard"
+              tone="emerald"
+              eyebrow="Checklist"
+            />
+            <LinkCard
+              href="/faq"
+              title="Help & FAQ"
+              description="See short answers if you are still unsure how to interpret a part of the estimate."
+              icon="info"
+              tone="amber"
+              eyebrow="Guidance"
+            />
+            <LinkCard
+              href="/gratuity-mistakes"
+              title="Common mistakes"
+              description="Review the most common errors people make when they rely on a draft number too quickly."
+              icon="warning"
+              tone="slate"
+              eyebrow="Checks"
+            />
+          </div>
+        </section>
       </Container>
     </main>
   );

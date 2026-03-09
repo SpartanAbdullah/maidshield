@@ -9,7 +9,8 @@ import { Divider } from "@/components/ui/Divider";
 import { buildOpenGraph, buildTwitter, makeCanonical } from "@/app/seo";
 
 const pageTitle = "Pro Waitlist";
-const pageDescription = "Join the MaidShield Pro waitlist for saved scenarios, cleaner records, and faster repeat settlement planning.";
+const pageDescription =
+  "Join the MaidShield Pro waitlist for repeat-case workflow, cleaner record packaging, and stronger scenario review tools.";
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -24,8 +25,13 @@ export default function ProWaitlistPage() {
     <main className="min-h-screen bg-slate-50 py-16 sm:py-24">
       <Container className="space-y-10">
         <section className="rounded-2xl border border-slate-200 bg-white px-6 py-10 sm:px-10 sm:py-12">
-          <PageHeader title="MaidShield Pro waitlist" subtitle="For households and assistants who handle repeated settlement planning and want cleaner records." />
-          <p className="mt-3 text-sm text-slate-600">Join to get early updates when planned workflow features become available.</p>
+          <PageHeader
+            title="MaidShield Pro waitlist"
+            subtitle="For people who handle repeated settlement planning and want stronger workflow support, not basic calculator access."
+          />
+          <p className="mt-3 text-sm text-slate-600">
+            Today, the free product already covers estimation, print-ready summaries, and local saved scenarios. Pro is intended for heavier repeat-case workflow once those tools are ready.
+          </p>
         </section>
 
         <Card>
@@ -33,21 +39,27 @@ export default function ProWaitlistPage() {
             <h2 className="text-lg font-semibold text-slate-900">Planned Pro workflow benefits</h2>
             <Divider className="my-4" />
             <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-600">
-              <li>Saved calculations for repeated use across multiple cases.</li>
-              <li>Scenario comparison for quick before/after review.</li>
-              <li>Advisor-friendly export format for cleaner discussions.</li>
-              <li>More consistent record-keeping flow for closeout files.</li>
+              <li>Side-by-side scenario comparison for before/after review.</li>
+              <li>Printable settlement pack for cleaner employer records.</li>
+              <li>Advisor-friendly export format for handoff and review.</li>
+              <li>Repeat-case workflow support for households, assistants, and family offices.</li>
             </ul>
-            <p className="mt-3 text-xs text-slate-500">These are planned features, not guaranteed release commitments.</p>
+            <p className="mt-3 text-xs text-slate-500">
+              These are planned workflow features, not guaranteed release commitments.
+            </p>
           </CardContent>
         </Card>
 
         <section>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Join the waitlist</h2>
-            <form action="https://app.maidshield.com/calculator"><Button type="submit" variant="secondary">Use calculator now</Button></form>
+            <form action="https://app.maidshield.com/calculator">
+              <Button type="submit" variant="secondary">Use calculator now</Button>
+            </form>
           </div>
-          <p className="mt-2 text-sm text-slate-600">We only send product updates related to early access and rollout windows.</p>
+          <p className="mt-2 text-sm text-slate-600">
+            We only send product updates related to early access and rollout windows.
+          </p>
           <LeadCapture source="pro_waitlist" intent="pro_features" className="mt-6 max-w-2xl" />
         </section>
       </Container>

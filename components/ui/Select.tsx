@@ -1,4 +1,4 @@
-import type { ReactNode, SelectHTMLAttributes } from "react";
+﻿import type { ReactNode, SelectHTMLAttributes } from "react";
 import { useId } from "react";
 
 type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
@@ -29,13 +29,11 @@ export function Select({
   const errorId = error ? `${selectId}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
 
-  const wrapperClasses = ["space-y-1.5", containerClassName]
-    .filter(Boolean)
-    .join(" ");
+  const wrapperClasses = ["space-y-2", containerClassName].filter(Boolean).join(" ");
   const selectClasses = [
-    "block h-10 w-full appearance-none rounded-xl border bg-white px-3 pr-10 text-sm text-slate-900",
+    "block h-11 w-full appearance-none rounded-xl border bg-white px-3 pr-10 text-sm text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
     "transition-[background-color,border-color,box-shadow] duration-200 ease-out",
-    "focus:outline-none focus:ring-2 focus:ring-slate-300",
+    "focus:outline-none focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--accent)_24%,white)] focus:ring-offset-2 focus:ring-offset-white",
     error ? "border-rose-400 focus:ring-rose-200" : "border-slate-300 hover:border-slate-400",
     className,
   ]
@@ -45,7 +43,7 @@ export function Select({
   return (
     <div className={wrapperClasses}>
       {label ? (
-        <label htmlFor={selectId} className="block text-sm font-medium text-slate-700">
+        <label htmlFor={selectId} className="block text-sm font-semibold text-slate-800">
           {label}
         </label>
       ) : null}
@@ -81,12 +79,12 @@ export function Select({
         </span>
       </div>
       {hint ? (
-        <p id={hintId} className="text-xs text-slate-500">
+        <p id={hintId} className="text-xs leading-5 text-slate-500">
           {hint}
         </p>
       ) : null}
       {error ? (
-        <p id={errorId} className="text-xs text-rose-600">
+        <p id={errorId} className="text-xs leading-5 text-rose-600">
           {error}
         </p>
       ) : null}

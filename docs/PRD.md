@@ -1,38 +1,48 @@
-# Product Requirements Document (PRD)
+# Product Requirements Document (Current MVP)
 
 ## Product
-MaidShield MVP: a web calculator that provides estimate ranges and supporting assumptions for domestic worker cost/compliance planning.
+MaidShield is a UAE-focused domestic worker gratuity and end-of-service planning tool for household employers.
 
-## MVP Scope
-- Input collection for core estimate factors:
-  - Location (state/region)
-  - Worker type and expected weekly hours
-  - Pay cadence and hourly/rate assumptions
-  - Start date and coverage period
-  - Optional benefits/taxes toggles
-- Calculation engine that returns:
-  - Low/median/high estimate range
-  - Line-item breakdown (wages, taxes, fees, optional add-ons)
-  - Assumption summary and confidence notes
-- Result presentation:
-  - On-screen summary cards + detailed table
-  - Export-ready printable summary format (future PDF generation hooks)
-- Basic health endpoint/status route for deployment checks.
+## Current MVP scope
+- Free calculator for gratuity planning
+- Visible assumptions, warnings, and breakdown lines
+- Print-friendly summary
+- Local saved scenarios in the same browser
+- Supporting trust content:
+  - Checklist
+  - FAQ
+  - Sources and assumptions
+  - Privacy and terms pages
+- Waitlist capture for future workflow features
+- Basic analytics and release monitoring support
 
-## Personas
-- Household Employer (Primary): needs a quick planning estimate before hiring.
-- Operations/Advisor (Secondary): needs transparent assumptions to explain estimates to clients.
-- Internal Product/Support (Tertiary): needs reproducible scenarios for QA and troubleshooting.
+## Primary personas
+- Household employer who needs a fast, trustworthy planning estimate before final settlement
+- Assistant, PRO, or family office operator who helps organize settlement preparation
+- Advisor or consultant who may later need better handoff and repeat-case workflow tools
 
-## Success Metrics
-- 95%+ successful calculation completion rate for valid forms.
-- Median time to first estimate under 90 seconds.
-- Less than 2% validation-error loops after initial form completion.
-- 99.9% health endpoint uptime in production.
+## What MVP is not
+- Legal advice
+- Payroll processing
+- Document upload workflow
+- Cloud account product
+- Final settlement guarantee
 
-## Non-Goals (MVP)
-- No legal determination or jurisdiction-specific legal advice.
-- No payroll filing, tax submission, or payment processing.
-- No account-based history syncing in MVP.
-- No automated legal document generation in MVP.
+## Success criteria
+- Users can understand the homepage promise quickly.
+- Users can complete a valid estimate without confusion.
+- Users can interpret the result and know what to do next.
+- Trust pages support the calculator instead of contradicting it.
+- Early usage data is strong enough to guide the next paid workflow feature.
 
+## Near-term priorities
+- Stabilize launch flow and analytics discipline
+- Improve post-result guidance
+- Validate demand for scenario comparison and settlement-pack style exports
+
+## Not-yet-committed future work
+- Scenario comparison
+- Settlement pack export
+- Advisor workflow tier
+- Arabic support
+- Cross-device saved history

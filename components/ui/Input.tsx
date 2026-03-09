@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode } from "react";
+﻿import type { InputHTMLAttributes, ReactNode } from "react";
 import { useId } from "react";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -26,13 +26,15 @@ export function Input({
   const hintId = hint ? `${inputId}-hint` : undefined;
   const errorId = error ? `${inputId}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
+  const hasValue = String(props.value ?? "").trim().length > 0;
 
   const inputClasses = [
-    "block h-10 w-full rounded-xl border bg-white px-3 text-sm text-slate-900",
+    "block h-11 w-full rounded-xl border bg-white/95 px-3 text-sm shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
+    hasValue || props.type !== "date" ? "text-slate-900" : "text-slate-500",
     "placeholder:text-slate-400",
     "transition-[background-color,border-color,box-shadow] duration-200 ease-out",
-    "focus:outline-none focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--accent)_25%,white)] focus:ring-offset-2 focus:ring-offset-white",
-    "disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed",
+    "focus:outline-none focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--accent)_24%,white)] focus:ring-offset-2 focus:ring-offset-white",
+    "disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500",
     error ? "border-rose-400 focus:ring-rose-200" : "border-slate-300 hover:border-slate-400",
     leading ? "pl-10" : "",
     trailing ? "pr-10" : "",
@@ -41,12 +43,12 @@ export function Input({
     .filter(Boolean)
     .join(" ");
 
-  const wrapperClasses = ["space-y-1.5", containerClassName].filter(Boolean).join(" ");
+  const wrapperClasses = ["space-y-2", containerClassName].filter(Boolean).join(" ");
 
   return (
     <div className={wrapperClasses}>
       {label ? (
-        <label htmlFor={inputId} className="block text-sm font-medium text-slate-700">
+        <label htmlFor={inputId} className="block text-sm font-semibold text-slate-800">
           {label}
         </label>
       ) : null}
@@ -74,13 +76,13 @@ export function Input({
       </div>
 
       {hint ? (
-        <p id={hintId} className="text-xs text-slate-500">
+        <p id={hintId} className="text-xs leading-5 text-slate-500">
           {hint}
         </p>
       ) : null}
 
       {error ? (
-        <p id={errorId} className="text-xs text-rose-600">
+        <p id={errorId} className="text-xs leading-5 text-rose-600">
           {error}
         </p>
       ) : null}

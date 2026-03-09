@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 
 type PageHeaderProps = {
   title: string;
@@ -20,15 +20,16 @@ export function PageHeader({
   return (
     <header className={classes}>
       <div className="max-w-3xl">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+        <h1 className="text-pretty text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-2 text-base leading-7 text-slate-600">{subtitle}</p>
+          <p className="mt-3 max-w-2xl text-pretty text-base leading-7 text-slate-600">
+            {subtitle}
+          </p>
         ) : null}
       </div>
       {actions ? <div className="flex items-center gap-3">{actions}</div> : null}
     </header>
   );
 }
-

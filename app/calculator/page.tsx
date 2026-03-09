@@ -1,19 +1,26 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
+import { BreakdownRow } from "@/components/calculator/BreakdownRow";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Divider } from "@/components/ui/Divider";
+import { HelperBlock } from "@/components/ui/HelperBlock";
 import { Icon } from "@/components/ui/Icon";
 import { Input } from "@/components/ui/Input";
+import { LinkCard } from "@/components/ui/LinkCard";
+import {
+  buildEstimateBreakdownSections,
+  formatCurrency,
+  getEstimateStructureNotes,
+} from "@/lib/calculator/presentation";
 import { track } from "@/lib/analytics";
 import { useFeatureFlag } from "@/lib/featureFlags";
+import { calculateGratuityEstimate } from "@/lib/rules/uae_domestic_worker";
 import {
   deleteScenario,
   loadScenarios,
@@ -239,8 +246,6 @@ export default function Calculator() {
   const [shareLinkMessage, setShareLinkMessage] = useState("");
   const [postPrintUpsellVisible, setPostPrintUpsellVisible] = useState(false);
   const [hasSubmittedCalculation, setHasSubmittedCalculation] = useState(false);
-  const exportSpreadsheetEnabled = useFeatureFlag("exportSpreadsheet");
-  const comparisonPlaceholderEnabled = useFeatureFlag("scenarioComparisonPlaceholder");
   const newUxFlowExperimentEnabled = useFeatureFlag("newUxFlowExperiment");
   const proTipTimingExperimentEnabled = useFeatureFlag("proTipTimingExperiment");
   const [touched, setTouched] = useState<TouchedState>({
@@ -340,6 +345,14 @@ export default function Calculator() {
       notes: form.notes.trim() || undefined,
     });
   }, [form]);
+  const breakdownSections = useMemo(
+    () => buildEstimateBreakdownSections(estimate),
+    [estimate],
+  );
+  const estimateStructureNotes = useMemo(
+    () => getEstimateStructureNotes(estimate),
+    [estimate],
+  );
 
   const notesFieldClassName = [
     "calculator-field block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400",
@@ -413,12 +426,12 @@ export default function Calculator() {
     const copied = await copyToClipboard(shareUrl);
 
     if (copied) {
-      setShareLinkMessage("Share link copied.");
+      setShareLinkMessage("Link copied. You can paste it into a message or email.");
       track("share_link_copied");
       return;
     }
 
-    setShareLinkMessage("Could not copy link. Copy from the browser address bar.");
+    setShareLinkMessage("Could not copy the link. Please copy it from the browser address bar.");
   }
 
   function handlePrintClick() {
@@ -428,7 +441,7 @@ export default function Calculator() {
     if (!allowance.allowed) {
       track("print_blocked_limit");
       setPrintLimitMessage(
-        "You have reached your 2 free prints for today. Join the Pro waitlist for unlimited prints."
+        "You have reached today's free print limit. Join the Pro waitlist for repeat-case workflow updates."
       );
       return;
     }
@@ -511,425 +524,417 @@ export default function Calculator() {
 
   return (
     <main className="py-12 sm:py-16">
-      <Container>
-        <PageHeader
-          title="Domestic Worker Gratuity Calculator"
-          subtitle="Use this estimate for planning. Review final settlement figures against your records before payment."
-        />
-        <p className="mt-3 border-l-2 border-slate-200 pl-3 text-xs text-slate-500">
-          Privacy note: calculations run in your browser. MaidShield does not store your
-          inputs.
+      <Container className="space-y-8">
+        <section className="rounded-[32px] border border-slate-200 bg-[radial-gradient(circle_at_top_right,rgba(26,115,232,0.10),transparent_34%),linear-gradient(180deg,#ffffff,rgba(248,250,252,0.98))] px-6 py-8 sm:px-10 sm:py-10">
+          <PageHeader
+            title="Domestic Worker Gratuity Calculator"
+            subtitle="Use this estimate for planning. Review final settlement figures against your records before payment."
+          />
+          <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <HelperBlock title="Start with the essentials" icon="calculator" tone="neutral">
+              Enter the contract start date, final working date, and basic monthly salary first. Add unpaid leave only if it applies to this estimate.
+            </HelperBlock>
+            <Card className="border-slate-200/90 bg-white/90">
+              <CardContent className="space-y-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-slate-500">Before you calculate</p>
+                    <h2 className="mt-1 text-lg font-semibold text-slate-900">Keep your source records nearby</h2>
+                  </div>
+                  <Badge variant="neutral">Planning only</Badge>
+                </div>
+                <div className="grid gap-3 text-sm text-slate-600">
+                  <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <Icon name="calendar" className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+                    <p>Use the contract dates or the final working dates you want to test.</p>
+                  </div>
+                  <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <Icon name="coins" className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+                    <p>Enter the monthly basic salary only unless your own review requires a different basis.</p>
+                  </div>
+                  <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <Icon name="clipboard" className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+                    <p>The result is an estimate, so plan to compare it with leave records, receipts, and final settlement documents.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <p className="text-xs text-slate-500">
+          Privacy note: calculations run in your browser. MaidShield does not store your inputs.
         </p>
         {newUxFlowExperimentEnabled ? (
-          <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
-            Experiment: streamlined flow hint enabled. Share feedback if this reduces time-to-result.
-          </p>
+          <HelperBlock icon="info" tone="info">
+            Experiment: streamlined flow hint enabled. Share feedback if this reduces time to result.
+          </HelperBlock>
         ) : null}
         {proTipTimingExperimentEnabled && hasSubmittedCalculation && !hasBlockingErrors ? (
-          <p className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+          <HelperBlock icon="check" tone="success">
             Pro tip: save this scenario before printing so you can compare revisions later.
-          </p>
+          </HelperBlock>
         ) : null}
         <p className="sr-only" aria-live="polite" role="status">
           {liveErrorMessage}
         </p>
 
-        <section className="mt-8 grid gap-5 lg:grid-cols-2 lg:items-start">
+        <section className="grid gap-5 lg:grid-cols-2 lg:items-start">
           <Card className="lg:col-start-1">
-            <CardContent className="space-y-4">
-              <h2 className="text-base font-semibold text-slate-900">Employment Inputs</h2>
-              <p className="text-sm text-slate-600">
-                Update values to refresh the estimate instantly.
-              </p>
-              <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  onClick={handleTryExampleClick}
-                >
-                  Try Example
-                </Button>
-                <Button type="button" size="sm" onClick={handleCalculateClick}>
-                  Calculate
-                </Button>
-                <p className="text-xs text-slate-600">
-                  Load a realistic sample case to see a meaningful estimate quickly.
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold text-slate-900">Employment inputs</h2>
+                <p className="text-sm leading-6 text-slate-600">
+                  Complete the core fields to unlock the estimate. Each field is written to help you enter the right information the first time.
                 </p>
               </div>
 
-              <Input
-                type="date"
-                label="Start Date"
-                value={form.startDate}
-                onChange={(event) => updateField("startDate", event.target.value)}
-                onBlur={() => markTouched("startDate")}
-                error={displayErrors.startDate}
-                className={getFilledFieldClass(form.startDate, errors.startDate)}
-              />
+              <div className="flex flex-col gap-3 rounded-[24px] border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Need a quick preview?</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                    Load a realistic example to see how the estimate and explanation are structured.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" size="sm" variant="secondary" onClick={handleTryExampleClick}>
+                    Try example
+                  </Button>
+                  <Button type="button" size="sm" onClick={handleCalculateClick}>
+                    Calculate estimate
+                  </Button>
+                </div>
+              </div>
 
-              <Input
-                type="date"
-                label="End Date"
-                value={form.endDate}
-                onChange={(event) => updateField("endDate", event.target.value)}
-                onBlur={() => markTouched("endDate")}
-                error={displayErrors.endDate}
-                className={getFilledFieldClass(form.endDate, errors.endDate)}
-              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Input
+                  type="date"
+                  label="Contract start date"
+                  hint="Select contract start date."
+                  value={form.startDate}
+                  onChange={(event) => updateField("startDate", event.target.value)}
+                  onBlur={() => markTouched("startDate")}
+                  error={displayErrors.startDate}
+                  className={getFilledFieldClass(form.startDate, errors.startDate)}
+                />
 
-              <Input
-                type="number"
-                min="0"
-                step="0.01"
-                label="Basic Monthly Salary"
-                value={form.basicMonthlySalary}
-                onChange={(event) => updateField("basicMonthlySalary", event.target.value)}
-                onBlur={() => markTouched("basicMonthlySalary")}
-                aria-label="Basic Monthly Salary"
-                error={displayErrors.basicMonthlySalary}
-                hint="Enter base monthly wage used for gratuity estimation."
-                className={getFilledFieldClass(
-                  form.basicMonthlySalary,
-                  errors.basicMonthlySalary,
-                )}
-              />
+                <Input
+                  type="date"
+                  label="Final working date"
+                  hint="Select final working date for this estimate."
+                  value={form.endDate}
+                  onChange={(event) => updateField("endDate", event.target.value)}
+                  onBlur={() => markTouched("endDate")}
+                  error={displayErrors.endDate}
+                  className={getFilledFieldClass(form.endDate, errors.endDate)}
+                />
+              </div>
 
-              <Input
-                type="number"
-                min="0"
-                step="1"
-                label="Unpaid Leave Days (Optional)"
-                value={form.unpaidLeaveDays}
-                onChange={(event) => updateField("unpaidLeaveDays", event.target.value)}
-                onBlur={() => markTouched("unpaidLeaveDays")}
-                error={displayErrors.unpaidLeaveDays}
-                className={getFilledFieldClass(form.unpaidLeaveDays, errors.unpaidLeaveDays)}
-              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  label="Basic monthly salary (AED)"
+                  placeholder="Enter monthly salary"
+                  value={form.basicMonthlySalary}
+                  onChange={(event) => updateField("basicMonthlySalary", event.target.value)}
+                  onBlur={() => markTouched("basicMonthlySalary")}
+                  aria-label="Basic monthly salary"
+                  error={displayErrors.basicMonthlySalary}
+                  hint="Enter the monthly basic salary only, without allowances."
+                  className={getFilledFieldClass(
+                    form.basicMonthlySalary,
+                    errors.basicMonthlySalary,
+                  )}
+                />
 
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="calculator-notes"
-                  className="block text-sm font-medium text-slate-700"
-                >
-                  Notes (Optional)
+                <Input
+                  type="number"
+                  min="0"
+                  step="1"
+                  label="Unpaid leave days (optional)"
+                  placeholder="Choose total unpaid leave days, if applicable"
+                  value={form.unpaidLeaveDays}
+                  onChange={(event) => updateField("unpaidLeaveDays", event.target.value)}
+                  onBlur={() => markTouched("unpaidLeaveDays")}
+                  error={displayErrors.unpaidLeaveDays}
+                  hint="Leave blank if there was no unpaid leave to deduct in this estimate."
+                  className={getFilledFieldClass(form.unpaidLeaveDays, errors.unpaidLeaveDays)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="calculator-notes" className="block text-sm font-semibold text-slate-800">
+                  Notes (optional)
                 </label>
                 <textarea
                   id="calculator-notes"
-                  rows={3}
+                  rows={4}
                   value={form.notes}
                   onChange={(event) => updateField("notes", event.target.value)}
                   aria-label="Notes"
-                  placeholder="Add internal context for this estimate..."
+                  placeholder="Add a private note for this estimate, such as a record reference or review reminder."
                   className={notesFieldClassName}
                 />
+                <p className="text-xs leading-5 text-slate-500">
+                  Notes stay in this browser only when you save a scenario locally.
+                </p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="lg:col-start-2">
-            <CardContent>
+            <CardContent className="space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-base font-semibold text-slate-900">Live Summary</h2>
-
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="secondary"
-                    disabled={hasBlockingErrors}
-                    onClick={handlePrintClick}
-                    title={
-                      hasBlockingErrors
-                        ? "Complete required fields to enable print summary"
-                        : "Opens print-friendly summary in a new tab"
-                    }
-                  >
-                    <Icon name="file" className="h-4 w-4" />
-                    Download/Print PDF
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    disabled={hasBlockingErrors}
-                    onClick={handleSaveScenario}
-                    title={
-                      hasBlockingErrors
-                        ? "Complete required fields to save a scenario"
-                        : "Save this input set for later"
-                    }
-                  >
-                    <Icon name="check" className="h-4 w-4" />
-                    Save scenario
-                  </Button>
-                  <Button variant="ghost" onClick={handleCopyShareLinkClick}>
-                    <Icon name="link" className="h-4 w-4" />
-                    Copy Share Link
-                  </Button>
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">Estimate summary</h2>
+                  <p className="mt-1 text-sm text-slate-600">Based on your current inputs.</p>
                 </div>
+                <Badge variant="info">Live</Badge>
               </div>
-              {shareLinkMessage ? (
-                <p className="mt-3 text-xs text-slate-600">{shareLinkMessage}</p>
-              ) : null}
 
-              <Divider className="my-5" />
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="secondary"
+                  disabled={hasBlockingErrors}
+                  onClick={handlePrintClick}
+                  title={
+                    hasBlockingErrors
+                      ? "Complete required fields to enable print summary"
+                      : "Opens print-friendly summary in a new tab"
+                  }
+                >
+                  <Icon name="file" className="h-4 w-4" />
+                  Download/Print PDF
+                </Button>
+                <Button
+                  variant="secondary"
+                  disabled={hasBlockingErrors}
+                  onClick={handleSaveScenario}
+                  title={
+                    hasBlockingErrors
+                      ? "Complete required fields to save a scenario"
+                      : "Save this input set for later"
+                  }
+                >
+                  <Icon name="check" className="h-4 w-4" />
+                  Save scenario
+                </Button>
+                <Button variant="ghost" disabled={hasBlockingErrors} onClick={handleCopyShareLinkClick}>
+                  <Icon name="link" className="h-4 w-4" />
+                  Copy share link
+                </Button>
+                <Button variant="ghost" disabled={hasBlockingErrors} onClick={handleExportCsv}>
+                  <Icon name="file" className="h-4 w-4" />
+                  Export CSV
+                </Button>
+              </div>
+
+              {shareLinkMessage ? (
+                <HelperBlock icon="link" tone="success">
+                  {shareLinkMessage}
+                </HelperBlock>
+              ) : null}
 
               <Input
                 label="Scenario title (optional)"
-                placeholder="Example: March review"
+                placeholder="Example: March family review"
                 value={scenarioTitle}
                 onChange={(event) => setScenarioTitle(event.target.value)}
-                hint={`If left empty, it will be saved as "Scenario - ${getTodayKey()}".`}
+                hint={`Saved in this browser only. If left empty, it will be saved as "Scenario - ${getTodayKey()}".`}
               />
 
-              <div className="mt-5 space-y-4">
-                {missingRequiredInputs ? (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm text-slate-700">
-                      Enter start date, end date, and basic salary to see estimate.
-                    </p>
-                    <ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                      <li>Use basic salary</li>
-                      <li>Dates should match contract period</li>
-                      <li>Unpaid leave is optional</li>
-                    </ul>
+              {missingRequiredInputs ? (
+                <HelperBlock title="Estimate locked until the core fields are filled" icon="info" tone="neutral">
+                  Enter the start date, final working date, and basic monthly salary to see the estimate. Unpaid leave and notes are optional.
+                </HelperBlock>
+              ) : null}
+
+              {canShowEstimate ? (
+                <div className="rounded-[28px] bg-slate-900 px-5 py-5 text-white shadow-[0_24px_45px_-30px_rgba(15,23,42,0.7)]">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <p className="text-sm text-slate-300">Estimated gratuity</p>
+                      <p className="mt-2 text-4xl font-semibold tracking-tight">{formatCurrency(estimate.gratuityAmount)}</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        Based on the information you entered. Review the structure below before relying on the figure.
+                      </p>
+                    </div>
+                    <Badge variant="neutral" className="border-white/15 bg-white/10 text-white">
+                      Estimate
+                    </Badge>
                   </div>
-                ) : null}
-                {canShowEstimate ? (
-                  <>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                        Service Duration
-                      </p>
-                      <p className="mt-1 text-sm text-slate-800">
-                        {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m{" "}
-                        {estimate.serviceDuration.days}d
-                      </p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        Total days: {estimate.serviceDuration.totalDays} | Adjusted service
-                        days: {estimate.adjustedServiceDays}
+                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Contract period</p>
+                      <p className="mt-2 text-sm font-semibold text-white">
+                        {formatInputDate(form.startDate)} to {formatInputDate(form.endDate)}
                       </p>
                     </div>
-
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                        Estimated Gratuity
-                      </p>
-                      <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-                        AED {estimate.gratuityAmount.toFixed(2)}
+                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Service duration</p>
+                      <p className="mt-2 text-sm font-semibold text-white">
+                        {estimate.serviceDuration.years}y {estimate.serviceDuration.months}m {estimate.serviceDuration.days}d
                       </p>
                     </div>
-                  </>
-                ) : null}
+                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Eligible service days</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{estimate.adjustedServiceDays} days</p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                    Warnings
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Icon name="warning" colorVariant="warning" className="h-4 w-4" />
+                  <h3 className="text-sm font-semibold text-slate-900">Warnings</h3>
+                </div>
+                {!canShowEstimate ? (
+                  <p className="text-sm text-slate-600">
+                    Complete valid inputs to review warnings and estimate notes.
                   </p>
-                  {!canShowEstimate ? (
-                    <p className="mt-1 text-sm text-slate-600">
-                      Complete required inputs to review warnings and assumptions.
-                    </p>
-                  ) : estimate.warnings.length === 0 ? (
-                    <p className="mt-1 text-sm text-slate-600">No warnings.</p>
-                  ) : (
-                    <ul className="mt-2 space-y-2 text-sm text-[color:#b77900]">
-                      {estimate.warnings.map((warning) => (
-                        <li
-                          key={warning}
-                          className="flex items-start gap-2 rounded-lg border border-[color:var(--g-yellow)]/25 bg-[var(--tint-yellow)] px-3 py-2"
-                        >
-                          <Icon
-                            name="warning"
-                            colorVariant="warning"
-                            className="mt-0.5 h-4 w-4 shrink-0"
-                          />
-                          <span>{warning}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
+                ) : estimate.warnings.length === 0 ? (
+                  <HelperBlock icon="check" tone="success">
+                    No warnings are being surfaced from the current inputs.
+                  </HelperBlock>
+                ) : (
+                  <ul className="space-y-2 text-sm text-[color:#b77900]">
+                    {estimate.warnings.map((warning) => (
+                      <li
+                        key={warning}
+                        className="flex items-start gap-2 rounded-2xl border border-[color:var(--g-yellow)]/30 bg-[var(--tint-yellow)] px-4 py-3"
+                      >
+                        <Icon
+                          name="warning"
+                          colorVariant="warning"
+                          className="mt-0.5 h-4 w-4 shrink-0"
+                        />
+                        <span>{warning}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
 
-              <section className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+              <section className="rounded-[24px] border border-slate-200 bg-slate-50/70 p-4 sm:p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <Icon name="info" colorVariant="info" className="h-4 w-4" />
-                    <h3 className="text-sm font-semibold text-slate-900">
-                      Calculation breakdown
-                    </h3>
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900">Calculation breakdown</h3>
+                    <p className="mt-1 text-sm text-slate-600">How this estimate is structured, line by line.</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href="/sources"
-                      className="text-xs font-medium text-slate-600 underline underline-offset-2 hover:text-slate-800"
-                    >
-                      Sources &amp; assumptions
-                    </Link>
-                    <Badge variant="info">Info</Badge>
-                  </div>
+                  <Link
+                    href="/sources"
+                    className="text-sm font-medium text-slate-700 underline underline-offset-2 hover:text-slate-900"
+                  >
+                    Sources &amp; assumptions
+                  </Link>
                 </div>
                 {canShowEstimate ? (
-                  <>
-                    <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
-                      <div>
-                        <dt className="text-slate-500">Start Date</dt>
-                        <dd className="text-slate-800">
-                          {formatInputDate(estimate.inputsUsed.startDate)}
-                        </dd>
+                  <div className="mt-5 space-y-5">
+                    {breakdownSections.map((section) => (
+                      <div key={section.title} className="space-y-3">
+                        <div>
+                          <h4 className="text-sm font-semibold text-slate-900">{section.title}</h4>
+                          <p className="mt-1 text-xs leading-5 text-slate-500">{section.description}</p>
+                        </div>
+                        <div className="grid gap-3">
+                          {section.rows.map((row) => (
+                            <BreakdownRow
+                              key={row.label}
+                              label={row.label}
+                              value={row.value}
+                              helper={row.helper}
+                              tone={row.tone}
+                              emphasis={row.emphasis}
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <div>
-                        <dt className="text-slate-500">End Date</dt>
-                        <dd className="text-slate-800">
-                          {formatInputDate(estimate.inputsUsed.endDate)}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-slate-500">Basic Monthly Salary</dt>
-                        <dd className="text-slate-800">
-                          AED {estimate.inputsUsed.basicMonthlySalary.toFixed(2)}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-slate-500">Unpaid Leave Days</dt>
-                        <dd className="text-slate-800">
-                          {estimate.inputsUsed.unpaidLeaveDays}
-                        </dd>
-                      </div>
-                    </dl>
-                    <ul className="mt-4 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                      {estimate.breakdownLines.map((line) => (
-                        <li key={line}>{line}</li>
-                      ))}
-                    </ul>
-                  </>
+                    ))}
+                  </div>
                 ) : missingRequiredInputs ? (
-                  <p className="mt-3 text-sm text-slate-600">
-                    Enter start date, end date, and basic salary to see a full breakdown.
+                  <p className="mt-4 text-sm text-slate-600">
+                    Enter the core fields to unlock the structured breakdown.
                   </p>
                 ) : (
-                  <p className="mt-3 text-sm text-slate-600">
-                    {liveErrorMessage || "Complete valid inputs to see a full breakdown."}
+                  <p className="mt-4 text-sm text-slate-600">
+                    {liveErrorMessage || "Complete valid inputs to see the structured breakdown."}
                   </p>
                 )}
               </section>
+
+              {canShowEstimate ? (
+                <HelperBlock title="How this estimate is structured" icon="info" tone="neutral">
+                  <ul className="space-y-2">
+                    {estimateStructureNotes.map((note) => (
+                      <li key={note} className="leading-6">
+                        {note}
+                      </li>
+                    ))}
+                  </ul>
+                </HelperBlock>
+              ) : null}
             </CardContent>
           </Card>
 
-          <section className="rounded-xl border border-slate-200 bg-slate-50 p-4 lg:col-start-1">
-            <h3 className="text-sm font-semibold text-slate-900">
-              What this includes / excludes
-            </h3>
-            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <Card className="border-slate-200 bg-slate-50/80 lg:col-start-1">
+            <CardContent className="space-y-4">
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Includes
+                <h3 className="text-base font-semibold text-slate-900">What this estimate includes</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  It is intentionally focused so you can see what is in scope before you move on to the rest of the settlement work.
                 </p>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                  <li>Service duration</li>
-                  <li>Salary-based estimate</li>
-                  <li>Unpaid leave adjustment</li>
-                </ul>
               </div>
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Excludes
-                </p>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-slate-600">
-                  <li>Legal edge cases</li>
-                  <li>Disputes</li>
-                  <li>Allowances and government fees</li>
-                </ul>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Includes</p>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+                    <li>Service duration from the dates entered</li>
+                    <li>Basic-salary-based estimate structure</li>
+                    <li>Unpaid leave adjustment if entered</li>
+                    <li>Warnings and estimate assumptions</li>
+                  </ul>
+                </div>
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Still separate from this estimate</p>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+                    <li>Pending salary or leave encashment</li>
+                    <li>Allowances, fees, or reimbursements</li>
+                    <li>Disputes or edge-case legal questions</li>
+                    <li>Final settlement sign-off or advice</li>
+                  </ul>
+                </div>
               </div>
-            </div>
-          </section>
-
-          <details className="rounded-xl border border-slate-200 border-l-2 border-l-[var(--g-blue)] bg-[var(--tint-blue)] lg:col-start-1">
-            <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-slate-700">
-              Assumptions &amp; Notes
-            </summary>
-            <div className="space-y-3 px-4 pb-4 text-sm text-slate-700">
-              <ul className="space-y-2">
-                {estimate.assumptionsUsed.map((assumption) => (
-                  <li key={assumption} className="leading-6">
-                    {assumption}
-                  </li>
-                ))}
-              </ul>
-
-              {form.notes.trim() ? (
-                <>
-                  <Divider />
-                  <p className="text-slate-700">
-                    <span className="font-medium">User note:</span> {form.notes}
-                  </p>
-                </>
-              ) : null}
-            </div>
-          </details>
-
-          <section className="rounded-xl border border-slate-200 bg-slate-50 p-4 lg:col-start-1">
-            <h3 className="text-sm font-semibold text-slate-900">After you get the estimate</h3>
-            <p className="mt-2 text-sm text-slate-600">
-              Print the summary, copy a share link, or save a scenario once the required
-              fields are complete.
-            </p>
-            <p className="mt-3 text-xs text-slate-500">
-              PDF export uses your browser print dialog and does not store files on the server.
-            </p>
-            {postPrintUpsellVisible ? (
-              <p className="mt-2 text-xs text-slate-600">
-                Printed successfully. Want unlimited prints &amp; saved scenarios?{" "}
-                <a
-                  href="/pro"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium text-slate-800 underline underline-offset-2"
-                >
-                  Join Pro waitlist
-                </a>
-                .
-              </p>
-            ) : null}
-
-            <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
-              <h4 className="text-sm font-semibold text-slate-900">MaidShield Pro</h4>
-              <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
-                <li>Unlimited prints</li>
-                <li>Save scenarios</li>
-                <li>Employer checklist (coming soon)</li>
-              </ul>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="mt-4"
-                onClick={handleJoinWaitlistClick}
-              >
-                Join waitlist for Pro
-              </Button>
-              {printLimitMessage ? (
-                <p className="mt-3 text-sm text-slate-700">{printLimitMessage}</p>
-              ) : null}
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
           <Card className="lg:col-start-2">
             <CardContent className="space-y-4">
-              <h3 className="text-base font-semibold text-slate-900">Saved scenarios</h3>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <h3 className="text-base font-semibold text-slate-900">Saved scenarios</h3>
+                  <p className="text-xs text-slate-500">
+                    Stored locally in this browser only. Clearing browser storage removes them.
+                  </p>
+                </div>
+                <Badge variant="neutral">Local only</Badge>
+              </div>
               {savedScenarios.length === 0 ? (
-                <p className="text-sm text-slate-600">
-                  No saved scenarios yet. Save one from the summary panel.
-                </p>
+                <HelperBlock title="No saved scenarios yet" icon="clipboard" tone="neutral">
+                  Save one from the summary panel once the estimate looks right, and it will stay available in this browser for later comparison.
+                </HelperBlock>
               ) : (
                 <ul className="space-y-3">
                   {savedScenarios.map((scenario) => (
                     <li
                       key={scenario.id}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
                     >
                       <div>
                         <p className="text-sm font-medium text-slate-900">{scenario.title}</p>
-                        <p className="text-xs text-slate-500">
-                          Saved {formatScenarioDate(scenario.createdAt)}
-                        </p>
+                        <p className="text-xs text-slate-500">Saved {formatScenarioDate(scenario.createdAt)}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
@@ -953,8 +958,102 @@ export default function Calculator() {
               )}
             </CardContent>
           </Card>
+
+          <Card className="border-sky-200 bg-sky-50/70 lg:col-start-1">
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900">Assumptions &amp; notes</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Review these before you print or share the result so everyone is looking at the same estimate boundaries.
+                </p>
+              </div>
+              <ul className="space-y-2 text-sm leading-6 text-slate-700">
+                {estimate.assumptionsUsed.map((assumption) => (
+                  <li key={assumption} className="rounded-2xl border border-sky-200/80 bg-white/70 px-4 py-3">
+                    {assumption}
+                  </li>
+                ))}
+              </ul>
+              {form.notes.trim() ? (
+                <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-700">
+                  <span className="font-semibold text-slate-900">Your note:</span> {form.notes}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">Add an optional note if you want to save context with a scenario.</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-200 bg-amber-50/60 lg:col-start-2">
+            <CardContent className="space-y-5">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900">What to do after you get the estimate</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Treat the result as a guide, then move through the practical follow-on pages before final payment.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <LinkCard
+                  href="/checklist"
+                  title="Open checklist"
+                  description="Compare dates, salary records, handover steps, and receipts before you finalize anything."
+                  icon="clipboard"
+                  tone="sky"
+                />
+                <LinkCard
+                  href="/sources"
+                  title="Sources & assumptions"
+                  description="Recheck the estimate boundaries if the case includes anything unusual."
+                  icon="shield"
+                  tone="emerald"
+                />
+                <LinkCard
+                  href="/faq"
+                  title="Help & FAQ"
+                  description="Read the most common questions people ask before they rely on the figure."
+                  icon="info"
+                  tone="amber"
+                />
+                <LinkCard
+                  href="/pro"
+                  title="Pro waitlist"
+                  description="For repeated cases that may benefit from cleaner record packaging later on."
+                  icon="file"
+                  tone="slate"
+                />
+              </div>
+
+              {postPrintUpsellVisible ? (
+                <HelperBlock icon="check" tone="success">
+                  Printed successfully. If you handle repeated cases, the Pro waitlist is where we share future workflow tools first.
+                </HelperBlock>
+              ) : null}
+
+              <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                <h4 className="text-sm font-semibold text-slate-900">MaidShield Pro waitlist</h4>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Pro is planned for people who handle repeated cases and need cleaner records, not for access to the core calculator.
+                </p>
+                <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                  <li>Side-by-side scenario comparison</li>
+                  <li>Printable settlement pack for cleaner records</li>
+                  <li>Advisor-friendly export format</li>
+                </ul>
+                <Button variant="secondary" size="sm" className="mt-4" onClick={handleJoinWaitlistClick}>
+                  Join waitlist for Pro
+                </Button>
+                {printLimitMessage ? (
+                  <p className="mt-3 text-sm text-slate-700">{printLimitMessage}</p>
+                ) : null}
+              </div>
+            </CardContent>
+          </Card>
         </section>
       </Container>
     </main>
   );
 }
+
+
+
