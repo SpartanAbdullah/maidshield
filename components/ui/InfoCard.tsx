@@ -1,9 +1,9 @@
-﻿import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import { Card, CardContent } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 
-type InfoTone = "sky" | "emerald" | "amber" | "rose" | "slate";
+type InfoTone = "sky" | "emerald" | "amber" | "rose" | "slate" | "violet";
 
 type InfoCardProps = {
   title: string;
@@ -34,6 +34,10 @@ const toneClasses: Record<InfoTone, { card: string; icon: string }> = {
   slate: {
     card: "border-slate-200 bg-slate-50/90",
     icon: "bg-white text-slate-700",
+  },
+  violet: {
+    card: "border-violet-200 bg-violet-50/90",
+    icon: "bg-white/80 text-violet-700",
   },
 };
 

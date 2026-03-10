@@ -1,9 +1,9 @@
-﻿import type { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import Link from "next/link";
 
 import { Icon } from "@/components/ui/Icon";
 
-type LinkCardTone = "slate" | "sky" | "emerald" | "amber";
+type LinkCardTone = "slate" | "sky" | "emerald" | "amber" | "violet";
 
 type LinkCardProps = {
   href: string;
@@ -32,6 +32,10 @@ const toneClasses: Record<LinkCardTone, { icon: string; hover: string }> = {
     icon: "bg-amber-100 text-amber-700",
     hover: "hover:border-amber-200 hover:bg-amber-50/70",
   },
+  violet: {
+    icon: "bg-violet-100 text-violet-700",
+    hover: "hover:border-violet-200 hover:bg-violet-50/70",
+  },
 };
 
 export function LinkCard({
@@ -45,8 +49,8 @@ export function LinkCard({
 }: LinkCardProps) {
   const toneClass = toneClasses[tone];
   const classes = [
-    "group flex h-full items-start gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-[0_16px_30px_-28px_rgba(15,23,42,0.55)] transition-[transform,background-color,border-color,box-shadow] duration-200 ease-out",
-    "hover:-translate-y-0.5 hover:shadow-[0_18px_35px_-24px_rgba(15,23,42,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2",
+    "group flex h-full items-start gap-4 rounded-[24px] border border-slate-200 bg-white px-4 py-4 shadow-[0_18px_35px_-30px_rgba(15,23,42,0.55)] transition-[transform,background-color,border-color,box-shadow] duration-200 ease-out",
+    "hover:-translate-y-0.5 hover:shadow-[0_18px_35px_-22px_rgba(15,23,42,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2",
     toneClass.hover,
     className,
   ]
@@ -57,7 +61,7 @@ export function LinkCard({
     <Link href={href} className={classes}>
       <span
         className={[
-          "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl",
+          "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-transform duration-200 group-hover:scale-[1.04]",
           toneClass.icon,
         ]
           .filter(Boolean)
