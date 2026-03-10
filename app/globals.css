@@ -3,23 +3,26 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
-  --brand-blue: #1A73E8;
-  --brand-red: #EA4335;
-  --brand-yellow: #FBBC05;
-  --brand-green: #34A853;
-  --g-blue: #1A73E8;
-  --g-red: #EA4335;
-  --g-yellow: #FBBC05;
-  --g-green: #34A853;
+  --brand-blue: #1a73e8;
+  --brand-red: #ea4335;
+  --brand-yellow: #fbbc05;
+  --brand-green: #34a853;
+  --brand-violet: #6f63ff;
+  --g-blue: #1a73e8;
+  --g-red: #ea4335;
+  --g-yellow: #fbbc05;
+  --g-green: #34a853;
+  --g-violet: #6f63ff;
   --tint-blue: rgba(26, 115, 232, 0.08);
   --tint-red: rgba(234, 67, 53, 0.08);
-  --tint-yellow: rgba(251, 188, 5, 0.10);
+  --tint-yellow: rgba(251, 188, 5, 0.1);
   --tint-green: rgba(52, 168, 83, 0.08);
+  --tint-violet: rgba(111, 99, 255, 0.08);
   --accent: var(--brand-blue);
   --accent-foreground: #ffffff;
-  --border: #E2E8F0;
+  --border: #e2e8f0;
   --muted: #475569;
-  --field-filled-bg: rgba(52, 168, 83, 0.10);
+  --field-filled-bg: rgba(52, 168, 83, 0.1);
   --field-filled-border: rgba(52, 168, 83, 0.34);
   --field-filled-border-hover: rgba(52, 168, 83, 0.46);
 }
@@ -38,8 +41,14 @@ body {
   height: 100%;
 }
 
+html {
+  color-scheme: light;
+}
+
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at top right, rgba(26, 115, 232, 0.08), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, #f8fbff 34%, #ffffff 100%);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -47,7 +56,7 @@ body {
 }
 
 ::selection {
-  background: rgba(15, 23, 42, 0.12);
+  background: rgba(26, 115, 232, 0.14);
 }
 
 a {
